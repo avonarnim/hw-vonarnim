@@ -48,12 +48,16 @@ public:
     // Add additional function prototypes here
     Rational operator+(const Rational b) const;
     Rational operator*(const Rational b) const;
-    Rational operator^(const Rational b) const;
-    friend bool operator==(const Rational a, const Rational b) const;
-    friend bool operator!=(const Rational a, const Rational b) const;
-    friend bool operator<(const Rational a, const Rational b) const;
-    friend void operator+=(Rational &a, const Rational b) const;
-    friend void operator*=(Rational &a, const Rational b) const;
+    friend Rational operator+(const int a, const Rational b);
+    friend Rational operator+(const Rational b, const int a);
+    friend Rational operator*(const int a, const Rational b);
+    friend Rational operator*(const Rational b, const int a);
+    Rational operator^(const int b) const;
+    friend bool operator==(const Rational b);
+    friend bool operator!=(const Rational b);
+    friend bool operator<(const Rational b);
+    friend Rational& operator+=(const Rational b);
+    friend Rational& operator*=(const Rational b);
 
 private:
     // Private helper functions that you must implement
