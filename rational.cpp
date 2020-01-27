@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include "rational.h"
 #include <math.h>
+#include <string>
 
 Rational::Rational()
 {
@@ -30,7 +31,7 @@ std::ostream& operator<<(std::ostream& ostr, const Rational& r)
 //takes in a rational number from a stringstream input
 std::istream& operator>>(std::istream& istr, Rational& r)
 {
-  string tempThatAcceptsTheSlash;
+  char tempThatAcceptsTheSlash = "";
   istr >> r.n;
   istr >> tempThatAcceptsTheSlash;
   istr >> r.d;
@@ -45,13 +46,49 @@ Rational Rational::operator+(const Rational b) const
   temp.d = denom;
   temp.reduce();
   temp.normalize0();
-  return temp;
+  return temp; //i think these will go out of bounds.
 }
 Rational Rational::operator*(const Rational b) const
 {
   Rational temp;
   temp.n = n*b.n;
   temp.d = d*b.d;
+  temp.reduce();
+  temp.normalize0();
+  return temp;
+}
+Rational Rational::operator+(const int a, const Rational b)
+{ //could probably do the 4 functions below by just calling each other
+  Rational temp;
+  temp.n = a*b.d + b.n;
+  temp.d = b.d;
+  temp.reduce();
+  temp.normalize0();
+  return temp;
+}
+Rational Rational::operator+(const Rational b, const int a)
+{
+  Rational temp;
+  temp.n = a*b.d + b.n;
+  temp.d = b.d;
+  temp.reduce();
+  temp.normalize0();
+  return temp;
+}
+Rational Rational::operator*(const int a, const Rational b)
+{
+  Rational temp;
+  temp.n = b.n*a;
+  temp.d = b.d;
+  temp.reduce();
+  temp.normalize0();
+  return temp;
+}
+Rational Rational::operator*(const Rational b, const int a)
+{
+  Rational temp;
+  temp.n = b.n*a;
+  temp.d = b.d;
   temp.reduce();
   temp.normalize0();
   return temp;
@@ -67,10 +104,10 @@ Rational Rational::operator^(int b) const
   temp.normalize0();
   return temp;
 }
-bool Rational::operator==(const Rational a, const Rational b) const
+bool Rational::operator==(const Rational b)
 {
-  a.reduce();
-  a.normalize0();
+  reduce();
+  normalize0();
   b.reduce();
   b.normalize0();
   if (n != b.n)
@@ -79,34 +116,46 @@ bool Rational::operator==(const Rational a, const Rational b) const
     return false;
   return true;
 }
-bool Rational::operator!=(const Rational a, const Rational b) const
+bool Rational::operator!=(const Rational b)
 {
-  return !(a == b);
+  return !(*this == b);
 }
-bool Rational::operator<(const Rational a, const Rational b) const
+bool Rational::operator<(const Rational b)
 {
-  if (a != b)
+  if (this->operator!=(b))
   {
-    a.reduce();
-    a.normalize0();
+    reduce();
+    normalize0();
     b.reduce();
     b.normalize0();
-    if (a.n/a.d < b.n/b.d)
+    if (this.n/this.d < b.n/b.d)
       return true;
     else
       return false;
   }
 }
-void Rational::operator+=(Rational &a, const Rational b) //what does the const outside a function do?
+Rational& Rational::operator+=(const Rational b)
 {
-  a = a + b;
+  int denom = lcm(d, b.d);
+  n = n*denom/d + b.n*denom/b.d;
+  d = denom;
+  reduce();
+  normalize0();
+
+  // can i do : this = this->operator+(b);
+  return *this;
 }
-void Rational::operator*=(Rational &a, const Rational b)
+Rational& Rational::operator*=(const Rational b)
 {
-  a = a*b;
+  n = b.n*a;
+  d = b.d;
+  reduce();
+  normalize0();
+  // can i do : this = this->operator*(b);
+  return *this;
 }
 //used khanacademy's article on The Euclidean Algorithm for finding a GCD
-static Rational::int gcd(int a, int b)
+int Rational::gcd(int a, int b)
 {
   if (a != 0 && b != 0)
     return gcd(b, a%b);
@@ -114,14 +163,14 @@ static Rational::int gcd(int a, int b)
     return b;
 }
 //used stackoverflow answer of how to find the lcm
-static Rational::int lcm(int a, int b)
+int Rational::lcm(int a, int b)
 {
   return a*b/gcd(a,b);
 }
 
 void Rational::reduce()
 {
-  divisor = gcd(n, d)
+  int divisor = gcd(n, d)
   n /= divisor;
   d /= divisor;
 }
