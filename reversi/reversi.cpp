@@ -6,7 +6,7 @@ using namespace std;
 
 Square& Square::operator=(SquareValue value){
   value_ = value;
-  return *this; //am i doing this correctly?
+  return *this;
 }
 bool Square::operator==(SquareValue value) const{
   return value_ == value;
@@ -65,10 +65,16 @@ Board::Board(size_t s){
 }
 
 Board::~Board(){
+  for (int i = 0; i < dimension_; i++)
+    delete [] squares_ [i];
+  delete [] squares_;
 
 }
 Board& Board::operator=(const Board& original){
   dimension_ = original.dimension_;
+  for (int i = 0; i < dimension_; i++)
+    delete [] squares_ [i];
+  delete [] squares_;
   for (int i = 0; i < dimension_; i++)
     for (int j = 0; j < dimension_; j++)
     {
@@ -167,16 +173,15 @@ std::ostream& operator<<(std::ostream& out, const Board& board)
 }
 
 Reversi::Reversi(size_t size) : board_(size)
-
 {
   turn_ = Square::BLACK;
 }
+
 void Reversi::play()
 {
   char keyLetter;
-  char input[3];
+  char input[2];
   char inputRow;
-  char acceptSlash;
   size_t inputColumn;
   while (!is_game_over())
   {
@@ -186,10 +191,9 @@ void Reversi::play()
     {
       cin >> input;
       inputRow = input[0];
-      acceptSlash = input[1];
-      inputColumn = input[2];
-      if (turn_ == Square::BLACK)
-        if (is_legal_choice(inputRow, inputColumn, Square::BLACK))
+      inputColumn = input[1];
+      //change is_legal_choice to turn_, delete second.
+      if (is_legal_choice(inputRow, inputColumn, turn_))
         {
           // Flipping appropriate white tiles
           const size_t direction_count = 8;
@@ -206,7 +210,9 @@ void Reversi::play()
                   cursor_row += direction_row[d];
                   cursor_column += direction_column[d];
               }
-              bool found_same = board_.is_legal_and_same_color(cursor_row, cursor_column, turn_);
+              //make sure this is the right function
+              bool found_same = false;
+              found_same = board_.is_legal_and_same_color(cursor_row, cursor_column, turn_);
               if (found_opposite && found_same) {
                   cursor_row -= direction_row[d];
                   cursor_column -= direction_column[d];
@@ -219,39 +225,6 @@ void Reversi::play()
               }
             }
         }
-      else
-      {
-        if (is_legal_choice(inputRow, inputColumn, Square::WHITE))
-            {
-              // Flipping appropriate black tiles
-              const size_t direction_count = 8;
-              const int direction_row[] =    {-1, -1,  0, +1, +1, +1,  0, -1};
-              const int direction_column[] = { 0, -1, -1, -1,  0, +1, +1, +1};
-              for (size_t d = 0; d < direction_count; d++)
-              {
-                  char cursor_row = inputRow + direction_row[d];
-                  size_t cursor_column = inputColumn + direction_column[d];
-                  bool found_opposite = false;
-                  while (board_.is_legal_and_opposite_color(cursor_row, cursor_column, turn_))
-                  {
-                      found_opposite = true;
-                      cursor_row += direction_row[d];
-                      cursor_column += direction_column[d];
-                  }
-                  bool found_same = board_.is_legal_and_same_color(cursor_row, cursor_column, turn_);
-                  if (found_opposite && found_same) {
-                      cursor_row -= direction_row[d];
-                      cursor_column -= direction_column[d];
-                      while(board_.is_legal_and_opposite_color(cursor_row, cursor_column, turn_))
-                      {
-                        board_(cursor_row, cursor_column).flip();
-                        cursor_row -= direction_row[d];
-                        cursor_column -= direction_column[d];
-                      }
-                  }
-                }
-            }
-          }
       else
         {continue;}
     }
@@ -270,24 +243,20 @@ void Reversi::play()
         undo();
       }
     }
-  opposite_color(turn_);
+  turn_ = opposite_color(turn_); //make sure this is changing the turn color.
   }
   size_t bCount = 0;
   size_t wCount = 0;
-  for (int i = 0; i < this->board_.dimension(); i++)
-    for (int j = 0; j < this->board_.dimension(); j++)
-      if ((this->board_(i,j).value_) == Square::BLACK)
+  for (int i = 0; i < board_.dimension(); i++)
+    for (int j = 0; j < board_.dimension(); j++)
+      if ((board_(i,j).value_) == Square::BLACK)
         bCount++;
-      else if ((this->board_(i,j).value_) == Square::WHITE)
+      else if ((board_(i,j).value_) == Square::WHITE)
         wCount++;
   win_loss_tie_message(wCount, bCount);
   //deallocate everything
 }
 
-Reversi::~Reversi()
-{
-
-}
 void Reversi::save_checkpoint()
 {
   Checkpoint nextCheckpoint(board_, turn_);
@@ -378,4 +347,3 @@ bool Reversi::is_game_over() const
     }
     return true;
 }
-
