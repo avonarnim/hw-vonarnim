@@ -191,7 +191,7 @@ void Reversi::play()
     {
       cin >> input;
       inputRow = input[0];
-      inputColumn = input[1];
+      inputColumn = input[1]-'0';
       //change is_legal_choice to turn_, delete second.
       if (is_legal_choice(inputRow, inputColumn, turn_))
         {
@@ -224,6 +224,7 @@ void Reversi::play()
                   }
               }
             }
+            board_(inputRow, inputColumn).value_ = turn_;
         }
       else
         {continue;}
