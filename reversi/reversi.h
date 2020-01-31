@@ -166,7 +166,6 @@ public:
      *    WB
      */
     Reversi(size_t size);
-    ~Reversi();
 
     /*------------------- STUDENT TO WRITE -----------------*/
     /**
