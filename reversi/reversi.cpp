@@ -1,6 +1,5 @@
 #include <vector>
 #include <stdexcept>
-#include <sstring>
 #include "reversi.h"
 
 using namespace std;
@@ -59,10 +58,10 @@ Board::Board(size_t s){
   squares_ = new Square*[dimension_];
   for (int i = 0; i < dimension_; i++)
     squares_[i] = new Square[dimension_];
-  squares_[dimension_/2-1][dimension_/2-1] = Square::WHITE;
-  squares_[dimension_/2][dimension_/2] = Square::WHITE;
-  squares_[dimension_/2][dimension_/2-1] = Square::BLACK;
-  squares_[dimension_/2-1][dimension_/2] = Square::BLACK;
+  squares_[dimension_/2-1][dimension_/2] = Square::WHITE;
+  squares_[dimension_/2][dimension_/2-1] = Square::WHITE;
+  squares_[dimension_/2][dimension_/2] = Square::BLACK;
+  squares_[dimension_/2-1][dimension_/2-1] = Square::BLACK;
 }
 
 Board::~Board(){
@@ -174,21 +173,21 @@ Reversi::Reversi(size_t size) : board_(size)
 }
 void Reversi::play()
 {
-  std::stringstream ss;
-  string answer;
   char keyLetter;
+  char input[3];
   char inputRow;
   char acceptSlash;
   size_t inputColumn;
   while (!is_game_over())
   {
     prompt();
-    getline(cin, answer);
-    ss(answer);
-    ss >> keyLetter;
+    cin >> keyLetter;
     if (keyLetter == 'p')
     {
-      ss >> inputRow >> acceptSlash >> inputColumn;
+      cin >> input;
+      inputRow = input[0];
+      acceptSlash = input[1];
+      inputColumn = input[2];
       if (turn_ == Square::BLACK)
         if (is_legal_choice(inputRow, inputColumn, Square::BLACK))
         {
@@ -221,6 +220,7 @@ void Reversi::play()
             }
         }
       else
+      {
         if (is_legal_choice(inputRow, inputColumn, Square::WHITE))
             {
               // Flipping appropriate black tiles
@@ -251,8 +251,9 @@ void Reversi::play()
                   }
                 }
             }
+          }
       else
-        continue;
+        {continue;}
     }
     else if (keyLetter == 'q')
       break;
@@ -377,3 +378,4 @@ bool Reversi::is_game_over() const
     }
     return true;
 }
+
