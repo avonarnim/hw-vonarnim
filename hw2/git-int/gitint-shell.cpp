@@ -20,7 +20,6 @@ int main()
     quit = g.process_command(cmd_line);
     while (!quit)
     {
-      g.print_menu();
       cout << PROMPT_STARTER;
       getline(cin, cmd_line);
       // Add your code here
