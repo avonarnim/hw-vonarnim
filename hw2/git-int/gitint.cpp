@@ -203,18 +203,19 @@ bool GitInt::valid_commit(CommitIdx commit) const
 std::map<std::string, int> GitInt::buildState(CommitIdx from, CommitIdx to) const
 {
   std::map<std::string, int> retMap;
-  //std::map<std::string, int>::iterator j;
-  //std::map<std::string, int>::iterator k;
+  std::map<std::string, int>::const_iterator j;
+  std::map<std::string, int>::const_iterator k;
   CommitIdx i = commits_[from].parent_;
-  for (std::map<std::string, int>::iterator j = commits_[from].diffs_.begin(); j != commits_[from].diffs_.end(); ++j)
+  for (j = commits_[from].diffs_.begin(); j != commits_[from].diffs_.end(); ++j)
       {
-        retMap.insert(std::make_pair(j->first, j->second));
+        int sum = j->second;
         while (commits_[i].parent_ != to)
         {
-          std::map<std::string, int>::iterator k = commits_[i].diffs_.find(j->first);
-          j->second += k->second;
+          k = commits_[i].diffs_.find(j->first);
+          sum += k->second;
           i = commits_[i].parent_;
         }
+        retMap.insert(std::make_pair(j->first, sum));
       }
   return retMap;
 }
@@ -237,87 +238,115 @@ void GitInt::print_menu() const
     cout << "diff     commit-n commit-m     " << endl;
 }
 
-
 bool GitInt::process_command(std::string cmd_line)
 {
     bool quit = false;
     std::stringstream ss(cmd_line);
-    std::string cmd;
+    std::string cmd, input2s, input3s;
+    int input2i, input3i;
     ss >> cmd;
-    std::string input1;
+    std::string input2;
     if (ss.fail()) throw std::runtime_error(INVALID_COMMAND);
 
     if (cmd == "quit") {
         quit = true;
         return quit;
     }
-    // Continue checking/processing commands
-    std::string input2 = NULL, input3 = NULL;
-    ss >> input1;
-    if (!ss.fail())
+    if (cmd == "display")
     {
-      ss >> input2;
+      ss >> input2s;
+      if (!ss.fail())
+        display(input2s);
+      else
+        display_all();
+      return false;
+    }
+    if (cmd == "tag")
+    {
+      ss >> input2s;
       if (ss.fail())
-        {
-          if (input1 == "display")
-            display_all();
-          else if (input1 == "tag")
-            tags();
-          else if (input1 == "log")
-            log();
-          else if (input1 == "diff")
-            diff(head_);
-          else if (input1 == "checkout")
-            throw std::runtime_error(INVALID_COMMIT_NUMBER);
-        }
-      ss >> input3;
-      if (ss.fail())
-        {
-          if (input1 == "diff")
-            diff(stoi(input2));
-          else if (input1 == "display")
-            display(input2);
-          else if (input1 == "add")
-            add(input2);
-          else if (input1 == "commit")
-            commit(input2);
-          else if (input1 == "checkout")
-          {
-            if (valid_commit(stoi(input2)))
-              checkout(input2);
-            else
-              checkout((string)input2);
-          }
-          else if (input1 == "tag")
-            if (input2 == "-a")
-              throw std::runtime_error(INVALID_COMMAND);
-        }
+        tags();
       else
         {
-          if (input1 == "create")
-            create(input2, stoi(input3));
-          else if (input1 == "edit")
-            edit(input2, stoi(input3));
-          else if (input1 == "diff")
-            diff(stoi(input2), stoi(input3));
-          else if (input1 == "tag")
-            if (input2 == "-a")
-              create_tag(input3, head_);
+          ss >> input3s;
+          if (ss.fail())
+            throw std::runtime_error(INVALID_COMMAND);
+          else
+            if (input2s == "-a")
+              create_tag(input3s, head_);
             else
-              {
-                throw std::runtime_error(INVALID_COMMAND);
-              }
-          else if (input1 == "add")
-            {
-              add(input2);
-              while (!ss.fail())
-              {
-                add(input3);
-                ss >> input3;
-
-              }
-            }
+              throw std::runtime_error(INVALID_COMMAND);
         }
+      return false;
+    }
+    if (cmd == "log")
+    {
+      log();
+      return false;
+
+    }
+    if (cmd == "diff")
+    {
+      ss >> input2i;
+      if (ss.fail())
+        diff(head_);
+      else
+      {
+        ss >> input3i;
+        if (ss.fail())
+          diff(input2i);
+        else
+          diff(input2i, input3i);
+      }
+      return false;
+    }
+    if (cmd == "add")
+    {
+      ss >> input2s;
+      while (!ss.fail())
+      {
+        add(input2s);
+        ss >> input2s;
+      }
+      return false;
+    }
+    if (cmd == "commit")
+    {
+      ss >> input2s;
+      commit(input2s);
+      return false;
+    }
+    if (cmd == "create")
+    {
+      ss >> input2s >> input3i;
+      create(input2s, input3i);
+      return false;
+    }
+    if (cmd == "edit")
+    {
+      ss >> input3i;
+      edit(input2s, input3i);
+      return false;
+    }
+    if (cmd == "checkout")
+    {
+      ss >> input2i;
+      if (ss.fail())
+      {
+        ss >> input2s;
+        if (ss.fail())
+          throw std::runtime_error(INVALID_COMMIT_NUMBER);
+        else
+          checkout(input2s);
+      }
+      else
+      {
+        if(valid_commit(input2i))
+          checkout(input2i);
+        else
+          throw std::runtime_error(INVALID_COMMIT_NUMBER);
+      }
+      return false;
     }
     return quit;
 }
@@ -330,7 +359,6 @@ void GitInt::display_commit(CommitIdx commit) const
     display_helper(commits_[commit].diffs_);
 }
 
-
 void GitInt::display_helper(const std::map<std::string, int>& dat) const
 {
     for (std::map<std::string, int>::const_iterator cit = dat.begin();
@@ -339,7 +367,6 @@ void GitInt::display_helper(const std::map<std::string, int>& dat) const
         std::cout << cit->first << " : " << cit->second << std::endl;
     }
 }
-
 
 void GitInt::log_helper(CommitIdx commit_num, const std::string& log_message) const
 {
