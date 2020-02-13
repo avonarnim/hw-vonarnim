@@ -23,34 +23,29 @@ const std::string LOG_COMMIT_STARTER = "Commit: ";
 
 // Class implementation
 
-GitInt::GitInt() : saveParent(-1)
+GitInt::GitInt()
 {
-  std::map<std::string, int> dummyMap;
-  CommitObj currentCommit("", dummyMap, saveParent);
-  commits_.push_back(currentCommit);
-  beginningCommit = true;
+  head_ = -1; //creates dummy index
+  std::map<std::string, int> dummyMap;  //creates dummy map
+  CommitObj currentCommit("", dummyMap, head_); //creates commit object
+  commits_.push_back(currentCommit);  //inserts dummy object
+  head_++;  //sets base head
 }
 
 void GitInt::create(const std::string& filename, int value)
 {
-  if (beginningCommit)
-  {
-    head_++;
-    beginningCommit = false;
-  }
+  allFileNames.insert(filename);  //keeps track of all filenames
   currentFiles.insert(make_pair(filename, value));
 }
 
 void GitInt::edit(const std::string& filename, int value)
 {
-  if (beginningCommit)
-  {
-    head_++;
-    beginningCommit = false;
-  }
   std::map<string, int>::iterator it;
   it = currentFiles.find(filename);
-  it->second = value;
+  if (it == currentFiles.end()) //edits value if file exists
+    throw std::invalid_argument(INVALID_OPTION);
+  else
+    it->second = value;
 }
 
 void GitInt::display(const std::string& filename) const
@@ -66,23 +61,36 @@ void GitInt::display(const std::string& filename) const
 void GitInt::display_all() const
 {
   display_helper(currentFiles);
-  /*std::map<string, int>::iterator it;
-  for (it = currentFiles.begin(); it != currentFiles.end(); ++it)
-  {
-    cout << it->first << " : " << it->second << endl;
-  }*/
 }
 
 void GitInt::add(std::string filename)
 {
   std::map<string, int>::iterator it;
-  it = currentFiles.find(filename); //do convert currentFiles into diffs here?
-  stagedFiles.insert(make_pair(it->first, it->second));
+  it = currentFiles.find(filename);
+  if (it == currentFiles.end())
+    throw std::invalid_argument(INVALID_OPTION);
+  else
+    stagedFiles.insert(make_pair(it->first, it->second));
 }
 
 void GitInt::commit(std::string message)
 {
-  std::map<std::string, int> builtFiles = buildState(saveParent);
+  if (stagedFiles.size() == 0)
+    throw std::runtime_error(INVALID_COMMAND);
+    //get rid of parsedMessage
+    //char c = '\"';
+
+    //int firstQuote = message.find(c);
+    //if (firstQuote == string::npos)
+    //throw std::runtime_error(INVALID_COMMAND);
+    //message = message.substr(firstQuote+1);
+    //string parsedMessage = message.substr(0,message.find(c));
+
+  if (message.size() == 0)
+    throw std::runtime_error(INVALID_COMMAND);
+
+
+  std::map<std::string, int> builtFiles = buildState(head_);
   std::map<std::string, int>::iterator it;
   std::map<std::string, int>::const_iterator bit;
   for (it = stagedFiles.begin(); it != stagedFiles.end(); ++it)
@@ -93,7 +101,7 @@ void GitInt::commit(std::string message)
   CommitObj currentCommit(message, stagedFiles, head_);
   commits_.push_back(currentCommit);
   stagedFiles.clear();
-  beginningCommit = true;
+  head_ = commits_.size()-1;
 }
 
 void GitInt::create_tag(const std::string& tagname, CommitIdx commit)
@@ -118,8 +126,8 @@ void GitInt::tags() const
 
 bool GitInt::checkout(CommitIdx commitIndex)
 {
-  currentFiles =  buildState(commitIndex);
-  saveParent = commitIndex;
+  currentFiles = buildState(commitIndex);
+  head_ = commitIndex;
   return true;
 }
 
@@ -129,7 +137,7 @@ bool GitInt::checkout(std::string tag)
   checkoutIt = tagsMap.find(tag);
   CommitIdx commitIndex = checkoutIt->second;
   currentFiles = buildState(commitIndex);
-  saveParent = commitIndex;
+  head_ = commitIndex;
   return true;
 }
 
@@ -146,7 +154,7 @@ void GitInt::log() const
 
 void GitInt::diff(CommitIdx to) const
 {
-  if (head_ < 1) //had to
+  if (head_ < 1)
     return;
   std::map<std::string, int> built = buildState(to);  //had buildState(i)
   int largeAdd = 0;
@@ -209,7 +217,7 @@ std::map<std::string, int> GitInt::buildState(CommitIdx from, CommitIdx to) cons
   for (j = commits_[from].diffs_.begin(); j != commits_[from].diffs_.end(); ++j)
       {
         int sum = j->second;
-        while (commits_[i].parent_ != to)
+        while (commits_[i].parent_ >= to)
         {
           k = commits_[i].diffs_.find(j->first);
           sum += k->second;
@@ -245,24 +253,21 @@ bool GitInt::process_command(std::string cmd_line)
     std::string cmd, input2s, input3s;
     int input2i, input3i;
     ss >> cmd;
-    std::string input2;
     if (ss.fail()) throw std::runtime_error(INVALID_COMMAND);
 
     if (cmd == "quit") {
         quit = true;
         return quit;
     }
-    if (cmd == "display")
-    {
+    if (cmd == "display") {
       ss >> input2s;
       if (!ss.fail())
         display(input2s);
       else
         display_all();
-      return false;
+      return quit;
     }
-    if (cmd == "tag")
-    {
+    if (cmd == "tag") {
       ss >> input2s;
       if (ss.fail())
         tags();
@@ -277,63 +282,68 @@ bool GitInt::process_command(std::string cmd_line)
             else
               throw std::runtime_error(INVALID_COMMAND);
         }
-      return false;
+      return quit;
     }
-    if (cmd == "log")
-    {
+    if (cmd == "log") {
       log();
-      return false;
-
+      return quit;
     }
-    if (cmd == "diff")
-    {
+    if (cmd == "diff") {
       ss >> input2i;
       if (ss.fail())
         diff(head_);
       else
       {
-        ss >> input3i;
+        ss >> input3i; //do these need to be CommitIdx variables? or is int okay?
         if (ss.fail())
           diff(input2i);
         else
           diff(input2i, input3i);
       }
-      return false;
+      return quit;
     }
-    if (cmd == "add")
-    {
+    if (cmd == "add") {
       ss >> input2s;
       while (!ss.fail())
       {
         add(input2s);
         ss >> input2s;
       }
-      return false;
+      return quit;
     }
-    if (cmd == "commit")
-    {
-      ss >> input2s;
-      commit(input2s);
-      return false;
+    if (cmd == "commit") {
+      getline(ss,input2s,'\"');
+      if (input2s[input2s.size()-1] == '\n')
+        throw std::runtime_error(INVALID_COMMAND);
+      else
+      {
+        getline(ss,input2s,'\"');
+        if (input2s[input2s.size()-1] == '\n')
+          throw std::runtime_error(INVALID_COMMAND);
+        commit(input2s);
+      }
+      return quit;
     }
-    if (cmd == "create")
-    {
+    if (cmd == "create") {
       ss >> input2s >> input3i;
-      create(input2s, input3i);
-      return false;
+      if (!ss.fail())
+        create(input2s, input3i);
+      else
+        throw std::runtime_error(INVALID_COMMAND);
+      return quit;
     }
-    if (cmd == "edit")
-    {
-      ss >> input3i;
-      edit(input2s, input3i);
-      return false;
+    if (cmd == "edit") {
+      ss >> input2s >> input3i;
+      if (!ss.fail())
+        edit(input2s, input3i);
+      return quit;
     }
-    if (cmd == "checkout")
-    {
+    if (cmd == "checkout") {
       ss >> input2i;
       if (ss.fail())
       {
-        ss >> input2s;
+        ss.clear();
+        ss >> input2s;  //think about this
         if (ss.fail())
           throw std::runtime_error(INVALID_COMMIT_NUMBER);
         else
@@ -346,7 +356,7 @@ bool GitInt::process_command(std::string cmd_line)
         else
           throw std::runtime_error(INVALID_COMMIT_NUMBER);
       }
-      return false;
+      return quit;
     }
     return quit;
 }
@@ -376,3 +386,4 @@ void GitInt::log_helper(CommitIdx commit_num, const std::string& log_message) co
 }
 
 #endif
+
