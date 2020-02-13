@@ -267,10 +267,9 @@ private:
     // Add data members here
     std::vector<CommitObj> commits_;  //holds all commits
     CommitIdx head_;  //holds the current commit number. allows for tagging.
-    CommitIdx saveParent; //holds the parent of the current commit
-    bool beginningCommit; //informs whether to increment the head_ or not
 
     std::map<std::string,int> currentFiles; //holds all editable files + accrued values
+    std::set<std::string> allFileNames; //holds all file names
     std::map<std::string,int> stagedFiles;  //holds all added files
 
     std::map<std::string,CommitIdx> tagsMap;  //holds all tag-commit relations
