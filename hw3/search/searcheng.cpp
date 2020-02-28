@@ -12,6 +12,8 @@ std::string extract_extension(const std::string& filename);
 WebPageSet AndCombiner::combine(const WebPageSet& setA, const WebPageSet& setB)
 {
   WebPageSet returnSet;
+  if (setA.empty())
+    return returnSet;
   std::set<WebPage*>::iterator it;
   WebPage* transfer;
   for (it = setB.begin(); it != setB.end(); ++it)
@@ -26,6 +28,8 @@ WebPageSet AndCombiner::combine(const WebPageSet& setA, const WebPageSet& setB)
 WebPageSet DiffCombiner::combine(const WebPageSet& setA, const WebPageSet& setB)
 {
   WebPageSet returnSet;
+  if (setA.empty())
+    return returnSet;
   std::set<WebPage*>::iterator it;
   WebPage* transfer;
   for (it = setA.begin(); it != setA.end(); ++it)
@@ -140,7 +144,8 @@ WebPageSet SearchEng::search(const std::vector<std::string>& terms, WebPageSetCo
   std::map<std::string, WebPageSet>::const_iterator wit;
   WebPageSet a, b;  //could make a new set of references or smt and iterate through them?
   it = allKeywords.find(terms[0]);  //what if its empty
-  a = it->second;
+  if (it != allKeywords.end())
+    a = it->second;
   for (int i = 1; i < terms.size(); i++)
   {
     wit = allKeywords.find(terms[i]);  //gets WebPageSet of all pages w/ term i

@@ -147,7 +147,10 @@ Handler::HANDLER_STATUS_T AndHandler::process(SearchEng* eng, std::istream& inst
   string temp;
   WebPageSetCombiner* an = new AndCombiner(); //either change to non-da or check destructor
   while(instr >> temp)
+  {
+    temp = conv_to_lower(temp);
     terms.push_back(temp);
+  }
 
   const WebPageSet a = eng->search(terms, an);
   display_hits(a, ostr);
@@ -176,7 +179,10 @@ Handler::HANDLER_STATUS_T DiffHandler::process(SearchEng* eng, std::istream& ins
   string temp;
   WebPageSetCombiner* diff = new DiffCombiner();
   while(instr >> temp)
+  {
+    temp = conv_to_lower(temp);
     terms.push_back(temp);
+  }
 
   const WebPageSet a = eng->search(terms, diff);
   display_hits(a, ostr);
@@ -206,7 +212,10 @@ Handler::HANDLER_STATUS_T OrHandler::process(SearchEng* eng, std::istream& instr
   string temp;
   WebPageSetCombiner* orObj = new OrCombiner();
   while(instr >> temp)
+  {
+    temp = conv_to_lower(temp);
     terms.push_back(temp);
+  }
 
   const WebPageSet a = eng->search(terms, orObj);
   display_hits(a, ostr);
