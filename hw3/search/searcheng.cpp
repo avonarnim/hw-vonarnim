@@ -81,7 +81,6 @@ SearchEng::~SearchEng()
   for (pit = parserMap.begin(); pit != parserMap.end(); ++pit)
     delete [] pit->second;
 
-  //do i need to delete allWebPages?
 }
 
 void SearchEng::register_parser(const std::string& extension, PageParser* parser)
@@ -201,9 +200,9 @@ void SearchEng::read_page(const std::string& filename)
     wit2 = allWebPages.find(s);
     if (wit2 == allWebPages.end())
       {
-        WebPage* newInsertion = new WebPage(s);
-        allWebPages.insert(make_pair(*sit, newInsertion));
-        wit2 = allWebPages.find(filename);
+        WebPage* unmadeWebpage = new WebPage(s);
+        allWebPages.insert(make_pair(s, unmadeWebpage));
+        wit2 = allWebPages.find(s);
       }
     wit2->second->add_incoming_link(wit->second);
     wit->second->add_outgoing_link(wit2->second);

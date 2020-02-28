@@ -3,9 +3,9 @@ AND test-small
 AND tommy one
 AND tommy one four
 OR don
-OR U$SC 
+OR U$SC
 OR three really page
 DIFF sandra
-DIFF tommy one 
+DIFF tommy one
 DIFF tommy oNE page
 QUIT

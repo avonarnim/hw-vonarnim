@@ -85,25 +85,21 @@ void MDParser::parse(std::string filename, std::set<std::string>& allSearchableT
             }
             if (c == '(')
               state = LINKURL;
-            else if (c == ')')
+            else
               state = NORMALTEXT;
         }
         // Else we are in the LINKURL state.
-        else
+        else if (state == LINKURL)
         {
           // ADD YOUR CODE HERE
           if (c != ')')
             link += c;
           else {
-            if (link != "")
-            {
-              link = conv_to_lower(link);
-              allOutgoingLinks.insert(link);
-            }
+            link = conv_to_lower(link);
+            allOutgoingLinks.insert(link);
             link = "";
-          }
-          if (c == ')')
             state = NORMALTEXT;
+          }
         }
         // Attempt to get another character from the file.
         c = wfile.get();
