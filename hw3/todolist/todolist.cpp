@@ -154,7 +154,7 @@ bool DailyTodoList::empty(size_t dayIndex) const
 {
   if (dayIndex > cap_)
     throw std::invalid_argument("dayIndex is invalid");
-  if (data_[dayIndex]->nextItem == NULL)
+  if (data_[dayIndex] == NULL)  //was data_[dayIndex]->nextItem
     return true;
   else
     return false;
