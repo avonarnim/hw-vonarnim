@@ -154,6 +154,7 @@ Handler::HANDLER_STATUS_T AndHandler::process(SearchEng* eng, std::istream& inst
 
   const WebPageSet a = eng->search(terms, an);
   display_hits(a, ostr);
+  delete an;
   return HANDLER_OK;
 }
 
@@ -186,6 +187,7 @@ Handler::HANDLER_STATUS_T DiffHandler::process(SearchEng* eng, std::istream& ins
 
   const WebPageSet a = eng->search(terms, diff);
   display_hits(a, ostr);
+  delete diff;
   return HANDLER_OK;
 }
 
@@ -219,5 +221,6 @@ Handler::HANDLER_STATUS_T OrHandler::process(SearchEng* eng, std::istream& instr
 
   const WebPageSet a = eng->search(terms, orObj);
   display_hits(a, ostr);
+  delete orObj;
   return HANDLER_OK;
 }
