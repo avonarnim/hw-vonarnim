@@ -30,6 +30,7 @@ void DailyTodoList::push_back(size_t dayIndex, const std::string& val, bool high
     if (dayIndex < cap_)
     {
         this->insert(dayIndex, this->numItemsOnDay(dayIndex), val, highPriority);
+        cout << numItemsOnDay(dayIndex) << endl;
     }
     else
     {
@@ -52,6 +53,9 @@ void DailyTodoList::push_back(size_t dayIndex, const std::string& val, bool high
  */
 void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, bool highPriority)
 {
+  if (loc == 0 && dayIndex >= cap_)
+    resize(dayIndex);
+
   Item* insertion = new Item(val, NULL, NULL);
   if (highPriority)
   {
@@ -63,8 +67,6 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
       priorityEnd_ = insertion;
     }
   }
-  if (loc == 0 && dayIndex >= cap_)
-    resize(dayIndex);
 
   Item* header = data_[dayIndex];
   size_t counter = 0;
@@ -109,15 +111,15 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
 {
   if (dayIndex > cap_)
     throw std::out_of_range("Remove dayIndex is out of range");
+  if (loc > numItemsOnDay(dayIndex))
+    throw std::out_of_range("insert loc is out of range");
   Item* header = data_[dayIndex];
   int counter = 0;
-  while (counter+1 < loc && header != NULL)
+  while (counter+1 < loc)
   {
     header = header->nextItem;
     counter++;
   }
-  if (header == NULL)
-    throw std::out_of_range("Remove loc is out of range");
   Item* temp = header->nextItem;
   header->nextItem = temp->nextItem;
   if (temp->nextPriorityItem != NULL)

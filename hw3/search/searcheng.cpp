@@ -81,6 +81,8 @@ SearchEng::~SearchEng()
   for (pit = parserMap.begin(); pit != parserMap.end(); ++pit)
     delete [] pit->second;
 
+  delete [] noExtensionParser_;
+
 }
 
 void SearchEng::register_parser(const std::string& extension, PageParser* parser)
