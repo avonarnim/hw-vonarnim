@@ -53,10 +53,9 @@ void DailyTodoList::push_back(size_t dayIndex, const std::string& val, bool high
 void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, bool highPriority)
 {
   Item* insertion = new Item(val, NULL, NULL);
-  Item* header = data_[dayIndex];
-  size_t counter = 0;
   if (highPriority)
   {
+    sizePriorityList++;
     if (priorityEnd_ == NULL)
       priorityEnd_ = insertion;
     else {
@@ -64,19 +63,19 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
       priorityEnd_ = insertion;
     }
   }
-  if (loc == 0)
-  {
+  if (loc == 0 && dayIndex >= cap_)
     resize(dayIndex);
-    header = insertion;
-    insertion->nextItem = NULL;
-    return;
-  }
 
-  while (counter+1 < loc)
+  Item* header = data_[dayIndex];
+  size_t counter = 0;
+  while (counter < loc && header != NULL) //check back
   {
     header = header->nextItem;
     counter++;
   }
+  if (header == NULL)
+    if (loc != 0)
+      throw std::out_of_range("insert loc is out of range");
   Item* temp = header->nextItem;
   header->nextItem = insertion;
   insertion->nextItem = temp;
