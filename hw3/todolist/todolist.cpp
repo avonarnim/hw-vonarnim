@@ -69,15 +69,22 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
   Item* header = data_[dayIndex];
   size_t counter = 0;
   if (loc > numItemsOnDay(dayIndex))
-  throw std::out_of_range("insert loc is out of range");
-  while (counter <= loc) //check back
+    throw std::out_of_range("insert loc is out of range");
+  while (counter+1 < loc) //check back
   {
     header = header->nextItem;
     counter++;
   }
-  Item* temp = header->nextItem;
-  header->nextItem = insertion;
-  insertion->nextItem = temp;
+  if (loc == 0)
+  {
+    header = insertion;
+    insertion->nextItem = NULL;
+  }
+  else{
+    Item* temp = header->nextItem;
+    header->nextItem = insertion;
+    insertion->nextItem = temp;
+  }
   return;
 }
 
@@ -88,6 +95,8 @@ void DailyTodoList::resize(size_t orig_size)
   data_ = new Item * [cap_];
   for (int i = 0; i < orig_size; i++)
     data_[i] = dataTemp_[i];
+  for (int i = orig_size; i < 2*cap_; i++)
+    data_[i] = NULL;
   delete [] dataTemp_;
 }
 
@@ -152,7 +161,7 @@ size_t DailyTodoList::numItemsOnDay(size_t dayIndex) const
 
 bool DailyTodoList::empty(size_t dayIndex) const
 {
-  if (dayIndex > cap_)
+  if (dayIndex > cap_)  //>=?
     throw std::invalid_argument("dayIndex is invalid");
   if (data_[dayIndex] == NULL)  //was data_[dayIndex]->nextItem
     return true;
