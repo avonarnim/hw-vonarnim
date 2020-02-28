@@ -68,14 +68,13 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
 
   Item* header = data_[dayIndex];
   size_t counter = 0;
-  while (counter < loc && header != NULL) //check back
+  if (loc > numItemsOnDay(dayIndex))
+  throw std::out_of_range("insert loc is out of range");
+  while (counter <= loc) //check back
   {
     header = header->nextItem;
     counter++;
   }
-  if (header == NULL)
-    if (loc != 0)
-      throw std::out_of_range("insert loc is out of range");
   Item* temp = header->nextItem;
   header->nextItem = insertion;
   insertion->nextItem = temp;
