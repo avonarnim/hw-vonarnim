@@ -1,0 +1,11 @@
+PRINT test-small/page1.md     good.
+PRINT test-small/page3.md     good.
+INCOMING test-small/page1.md  good.
+OUTGOING test-small/page1.md  //does not work. page4.txt file does not show
+INCOMING test-small/page2.txt good.
+OUTGOING test-small/page2.txt good.
+INCOMING test-small/page3.md  //shows self, but should be empty
+OUTGOING test-small/page3.md  //prints 3? shows self but shouldn't. page4.txt/page1.md are in wrong order
+INCOMING test-small/page4.txt //shows page3.md, but not page1.md
+OUTGOING test-small/page4.txt good.
+QUIT                          //all display_pages give an unwanted \n & frees unallocated pointer & has seg fault.
