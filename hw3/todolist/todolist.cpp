@@ -86,9 +86,10 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
 void DailyTodoList::resize(size_t orig_size)
 {
   Item** dataTemp_ = data_;
-  data_ = new Item * [orig_size*2];
+  cap_ = orig_size*2;
+  data_ = new Item * [cap_];
   for (int i = 0; i < orig_size; i++)
-    delete [] dataTemp_[i];
+    data_[i] = dataTemp_[i];
   delete [] dataTemp_;
 }
 
@@ -124,11 +125,6 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
   delete [] temp;
 }
 
-/**
- *  Returns the number of days / to-do lists stored
- *  Days range from 0 to n-1 and represent the size/capacity
- *  of the array storing the to-do lists for each day.
- */
 size_t DailyTodoList::numDays() const
 {
   return cap_;
@@ -156,16 +152,6 @@ size_t DailyTodoList::numItemsOnDay(size_t dayIndex) const
   return counter;
 }
 
-/**
- *  Returns true if the to-do list for the given day is empty
- *
- *  @param[in] dayIndex
- *    Index of the desired to-do list
- *  @returns true if the to-do list for the given day is empty,
- *     and false otherwise.
- *  @throws std::out_of_range
- *    If the dayIndex is invalid.
- */
 bool DailyTodoList::empty(size_t dayIndex) const
 {
   if (dayIndex > cap_)
@@ -176,18 +162,6 @@ bool DailyTodoList::empty(size_t dayIndex) const
     return false;
 }
 
-/**
- *  Returns the to-do value for the given day and location in that
- *  day's to-do list.
- *
- *  @param[in] dayIndex
- *    Index of the day's to-do list
- *  @param[in] loc
- *    Location of the item to get from the given day's to-do list
- *  @returns the to-do value
- *  @throws std::out_of_range
- *    If the dayIndex is invalid.
- */
 const std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc) const
 {
   if (empty(dayIndex))
@@ -197,11 +171,13 @@ const std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc) cons
 
   size_t counter = 0;
   Item* header = data_[dayIndex];
-  while (counter != loc)  // should probably do ""&& header != NULL" to check for loc > size of day to do list
+  while (counter != loc && header != NULL)  // should probably do ""&& header != NULL" to check for loc > size of day to do list
   {
     header = header->nextItem;
     counter++;
   }
+  if (header == NULL)
+    throw std::invalid_argument("no item at the specified location");
   return header->val;
 }
 std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc)
@@ -218,35 +194,26 @@ std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc)
     header = header->nextItem;
     counter++;
   }
+  if (header == NULL)
+    throw std::invalid_argument("no item at the specified location");
   return header->val;
 }
 
-/**
- *  Returns the number of values in the high priority list
- */
 size_t DailyTodoList::numPriorityItems() const
 {
   return sizePriorityList;
 }
 
-/**
- *  Returns the to-do value for the given location in the high
- *  priority list.
- *
- *  @param[in] priorityLoc
- *    Location of the item to get from the high priority list
- *  @returns the to-do value
- *  @throws std::out_of_range
- *    If priorityLoc is invalid.
- */
 const std::string& DailyTodoList::getPriorityVal(size_t priorityLoc) const
 {
   size_t counter = 0;
   Item* priorityHeader = priorityHead_;
-  while (counter != priorityLoc)  // should probably do ""&& header != NULL" to check for loc > size of day to do list
+  while (counter != priorityLoc && priorityHeader != NULL)
   {
     priorityHeader = priorityHeader->nextPriorityItem;
     counter++;
   }
+  if (priorityHeader == NULL)
+    throw std::invalid_argument("no item at specified priority location");
   return priorityHeader->val;
 }
