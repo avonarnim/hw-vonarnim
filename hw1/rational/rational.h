@@ -46,18 +46,20 @@ public:
     friend std::istream& operator>>(std::istream& istr, Rational& r);
 
     // Add additional function prototypes here
-    Rational operator+(const Rational b) const;
-    Rational operator*(const Rational b) const;
-    friend Rational operator+(const int a, const Rational b);
-    friend Rational operator+(const Rational b, const int a);
-    friend Rational operator*(const int a, const Rational b);
-    friend Rational operator*(const Rational b, const int a);
+    Rational operator+(const Rational& b);
+    Rational operator*(const Rational& b);
+    friend Rational operator+(const int& a, const Rational& b);
+    Rational operator+(int a) const;
+    friend Rational operator*(const int& a, const Rational& b);
+    Rational operator*(int a) const;
     Rational operator^(const int b) const;
-    friend bool operator==(const Rational b);
-    friend bool operator!=(const Rational b);
-    friend bool operator<(const Rational b);
-    friend Rational& operator+=(const Rational b);
-    friend Rational& operator*=(const Rational b);
+    bool operator==(const Rational& b);
+    bool operator!=(const Rational& b);
+    bool operator<(const Rational& b);
+    Rational& operator+=(const Rational& b);
+    Rational& operator+=(int a);
+    Rational& operator*=(const Rational& b);
+    Rational& operator*=(int a);
 
 private:
     // Private helper functions that you must implement

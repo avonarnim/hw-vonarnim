@@ -1,0 +1,52 @@
+1. Review Material and Programming Advice
+Part (a)
+1, 4, 8
+Part (b)
+2, 3, 4, 5
+Part (c)
+4
+Part (d)
+1, 4
+
+
+2. Git Quiz
+Part (a)
+3
+Part (b)
+1. git add hw1q2b.cpp
+2. git log -3
+Part (c)
+Git will prompt you for a message through the editor.
+You will then be able to commit the change.
+
+
+3. Rational
+1. No: since the LHS of the addition sign is an int, it cannot call the operator
+overload function.
+2. Yes: as a friend function, it would have access to the private variables of
+the rational number.
+3. Yes: you could create a global function taking in the int and Rational data,
+then do an addition of the Rational on the LHS and the int on the RHS.
+
+4. Reversi
+1. std::ostream& operator<<(std::ostream& ostr, const Square& s) does not need
+to be a friend function because the square's color value is public by default
+and can thus be accessed
+2. The Board class requires a user-defined copy constructor, assignment
+operator, and destructor.
+
+5. Constructors and Destructors
+Part (a)
+"Rational
+Rational
+Record"
+Part (b)
+"Copy Rational
+Copy Rational
+Record"
+Part (c)
+//initialize r with major and overall
+Wrapper::Wrapper(const Rational&major, const Rational& overall) :
+r(major,overall)
+{
+}

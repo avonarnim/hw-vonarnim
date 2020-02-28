@@ -1,0 +1,58 @@
+Adam von Arnim
+
+1. Git Quiz
+  a. The README.md file will be tracked and unmodified.
+  b. The fun_problem.txt file will have untracked status, since it was
+    created via the touch command.
+    The README.md file will have modified status, since it was given text.
+  c. Both files will have a staged status.
+  d. Both files will have a modified status, since they were committed and then
+    given text.
+  e. The fun_problem.txt will have unmodified style, since it was checked out.
+    The README.md file will be staged.
+    The contents of fun_problem.txt are empty.
+  f. The README.md will be in the staged files list, but the actual changes from
+    this command will not be reflected in that commit yet. That change of adding
+    "Fancy git move" will require another add command.
+
+
+2. Abstract Data Types
+  1. I would use a map with keys of type string and values of type
+    vector<Song>, where Song is a class containing private data members track
+    number and track name. This would allow for O(log(n)) searching for playlist
+    names followed by O(1) searching for the name of a given, indexed track.
+    Alternatively, I could use a list of strings (song names) instead of a list
+    of Songs, thus implicitly associating track indices with list indices.
+  2. I would use a list of type string, since this would allow for sequential
+    ordering of steps in a recipe, which I assume would be in sentences and have
+    an intentional ordering.
+  3. I would use a map with string keys that represent the file extension types
+    and sets of strings (representing programs) as values. This would allow for
+    multiple values to be associated with each key.
+  4. I would use a set, since only keys are needed and ordering does not matter.
+
+
+3. Runtime Analysis
+  a. The function will run in Theta(n^(3/2)), since the outer loop will run
+    n^(1/2) times, with the inner loop running (n-i(n)^1/2), where i is the i
+    iterator in the given for loop.
+  b. The function will run in Theta(n^(2)). Assuming the worst case, where A[k] == i
+    for every value of k, the innermost loop will run log(n) times. This will
+    thus run nlog(n) times. However, since the outer two loops run n^2 times,
+    the run time will be n^2 (since n^2 > nlogn).
+  c. The function will run in Theta(n*log(^2)n). The first for loop is O(n) since
+    insert is linear. The second for loop has a find function, which runs
+    in log(n) time. The while loop will also run in log(n) time, since the k
+    variable is divided by two every loop. Since the for loop runs n times,
+    the overall for loop is n*log(n)*log(n). This is larger than the first for
+    loop.
+  d. The function will run in Theta(n). The inner if statement makes it such
+    that this code will run under the time constraint of a geometric series.
+    Every time i == size, the size is reassigned a value of 3*size/2, and there
+    are size runs in the inner for loop. Thus, the starting element of the
+    series is 10, and the constant ratio is 3/2. The only remaining question is
+    then how many times the inner for loop will run. It will only run while
+    the size is less than n. If i started at 0, it would run log(base 3/2)(n)
+    times, but since i starts at 10, it will run log(base 3/2)(n/10) times.
+    Thus, the run time will be 10*(3/2)^(log(base3/2)n/10), which simplifies
+    to Theta(n)[using conversion of a*log(base a)n = n].

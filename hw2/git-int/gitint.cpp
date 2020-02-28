@@ -51,9 +51,9 @@ void GitInt::edit(const std::string& filename, int value)
 void GitInt::display(const std::string& filename) const
 {
   std::map<string, int>::const_iterator it;
-  it = currentFiles.find(filename);
+  it = currentFiles.find(filename); //finds filename pair
   if (it != currentFiles.end())
-    std::cout << it->first << " : " << it->second << std::endl;
+    std::cout << it->first << " : " << it->second << std::endl; //prints
   else
     std::cout << "file not present in current files" << std::endl;
 }
@@ -66,46 +66,50 @@ void GitInt::display_all() const
 void GitInt::add(std::string filename)
 {
   std::map<string, int>::iterator it;
-  it = currentFiles.find(filename);
+  it = currentFiles.find(filename); //finds filename pair
   if (it == currentFiles.end())
     throw std::invalid_argument(INVALID_OPTION);
   else
-    stagedFiles.insert(make_pair(it->first, it->second));
+    stagedFiles.insert(make_pair(it->first, it->second)); //stages pair
 }
 
 void GitInt::commit(std::string message)
 {
   if (stagedFiles.size() == 0)
     throw std::runtime_error(INVALID_COMMAND);
-    //get rid of parsedMessage
-    //char c = '\"';
-
-    //int firstQuote = message.find(c);
-    //if (firstQuote == string::npos)
-    //throw std::runtime_error(INVALID_COMMAND);
-    //message = message.substr(firstQuote+1);
-    //string parsedMessage = message.substr(0,message.find(c));
 
   if (message.size() == 0)
     throw std::runtime_error(INVALID_COMMAND);
 
-
+  std::map<std::string, int> differences; //will be CommitObj diffs_ map
   std::map<std::string, int> builtFiles = buildState(head_);
   std::map<std::string, int>::iterator it;
   std::map<std::string, int>::const_iterator bit;
-  for (it = stagedFiles.begin(); it != stagedFiles.end(); ++it)
+
+  for (it = currentFiles.begin(); it != currentFiles.end(); ++it)
   {
     bit = builtFiles.find(it->first);
-    it->second = it->second - bit->second;
+    if (bit != builtFiles.end())
+      {if (it->second == bit->second)
+        {differences.insert(make_pair(it->first, 0));}
+      else if (stagedFiles.find(it->first) != stagedFiles.end())
+      {
+        int diff = it->second - bit->second;
+        differences.insert(make_pair(it->first, diff));;
+      }}
+    if (bit == builtFiles.end())
+      if (stagedFiles.find(it->first) != stagedFiles.end())
+        differences.insert(make_pair(it->first, it->second));
   }
-  CommitObj currentCommit(message, stagedFiles, head_);
+
+  CommitObj currentCommit(message, differences, head_);
   commits_.push_back(currentCommit);
   stagedFiles.clear();
   head_ = commits_.size()-1;
 }
 
 void GitInt::create_tag(const std::string& tagname, CommitIdx commit)
-{ //needs to be regulated by whether or not data has been changed at all
+{
   std::map<std::string,CommitIdx>::iterator tagTest = tagsMap.find(tagname);
   if (tagTest != tagsMap.end())
     throw std::invalid_argument(INVALID_OPTION);
@@ -126,8 +130,12 @@ void GitInt::tags() const
 
 bool GitInt::checkout(CommitIdx commitIndex)
 {
-  currentFiles = buildState(commitIndex);
-  head_ = commitIndex;
+  if (valid_commit(commitIndex))
+  {
+    currentFiles = buildState(commitIndex);
+    head_ = commitIndex;
+    stagedFiles.clear();
+  }
   return true;
 }
 
@@ -136,8 +144,12 @@ bool GitInt::checkout(std::string tag)
   std::map<std::string,CommitIdx>::iterator checkoutIt;
   checkoutIt = tagsMap.find(tag);
   CommitIdx commitIndex = checkoutIt->second;
-  currentFiles = buildState(commitIndex);
-  head_ = commitIndex;
+  if (valid_commit(commitIndex))
+  {
+    currentFiles = buildState(commitIndex);
+    head_ = commitIndex;
+    stagedFiles.clear();
+  }
   return true;
 }
 
@@ -157,11 +169,12 @@ void GitInt::diff(CommitIdx to) const
   if (head_ < 1)
     return;
   std::map<std::string, int> built = buildState(to);  //had buildState(i)
-  int largeAdd = 0;
-  int smallAdd = 0;
+
   std::map<std::string,int>::const_iterator it;
   for (it = currentFiles.begin(); it != currentFiles.end(); ++it)
   {
+    int largeAdd = 0;
+    int smallAdd = 0;
     largeAdd = it->second;
     std::map<std::string,int>::iterator cit = built.find(it->first);
     if (cit != built.end())
@@ -199,7 +212,7 @@ void GitInt::diff(CommitIdx from, CommitIdx to) const
 
 bool GitInt::valid_commit(CommitIdx commit) const
 {
-  if (commit < commits_.size())
+  if ((int)commit < (int)commits_.size())
     return true;
   else
     return false;
@@ -212,19 +225,20 @@ std::map<std::string, int> GitInt::buildState(CommitIdx from, CommitIdx to) cons
 {
   std::map<std::string, int> retMap;
   std::map<std::string, int>::const_iterator j;
-  std::map<std::string, int>::const_iterator k;
-  CommitIdx i = commits_[from].parent_;
-  for (j = commits_[from].diffs_.begin(); j != commits_[from].diffs_.end(); ++j)
-      {
-        int sum = j->second;
-        while (commits_[i].parent_ >= to)
-        {
-          k = commits_[i].diffs_.find(j->first);
-          sum += k->second;
-          i = commits_[i].parent_;
-        }
-        retMap.insert(std::make_pair(j->first, sum));
-      }
+
+  CommitIdx i = from;
+  while (i >= to)
+  {
+    for (j = commits_[i].diffs_.begin(); j != commits_[i].diffs_.end(); ++j)
+    {
+      std::map<std::string, int>::iterator forRet = retMap.find(j->first);
+      if (forRet == retMap.end())
+        retMap.insert(make_pair(j->first,j->second));
+      else
+        forRet->second += j->second;
+    }
+    i = commits_[i].parent_;
+  }
   return retMap;
 }
 
@@ -386,4 +400,3 @@ void GitInt::log_helper(CommitIdx commit_num, const std::string& log_message) co
 }
 
 #endif
-
