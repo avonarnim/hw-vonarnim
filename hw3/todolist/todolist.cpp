@@ -224,12 +224,20 @@ const std::string& DailyTodoList::getPriorityVal(size_t priorityLoc) const
   if (priorityLoc >= sizePriorityList)
     throw std::out_of_range("no item at specified priority location");
   Item* priorityHeader = priorityHead_;
-  while (counter != priorityLoc && priorityHeader != NULL)  //traverses list
+
+  if (sizePriorityList == 1)
+    {
+      return priorityHeader->val;
+    }
+  else
   {
-    priorityHeader = priorityHeader->nextPriorityItem;
-    counter++;
+    while (counter != priorityLoc && priorityHeader != NULL)  //traverses list
+    {
+      priorityHeader = priorityHeader->nextPriorityItem;
+      counter++;
+    }
+    if (priorityHeader == NULL)
+      throw std::out_of_range("no item at specified priority location");
+    return priorityHeader->val; //returns item's value
   }
-  if (priorityHeader == NULL)
-    throw std::out_of_range("no item at specified priority location");
-  return priorityHeader->val; //returns item's value
 }
