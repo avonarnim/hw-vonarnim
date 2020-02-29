@@ -123,19 +123,11 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
     throw std::out_of_range("Remove dayIndex is out of range");
 
   Item* header = data_[dayIndex];
+  Item* temp;
   if (loc == 0)
   {
-    if (header->nextPriorityItem != NULL || header == priorityEnd_)
-    {
-      Item* priorityParse = priorityHead_;
-      while (priorityParse->nextPriorityItem != header)
-      {
-        priorityParse = priorityParse->nextPriorityItem;
-      }
-      priorityParse->nextPriorityItem = priorityParse->nextPriorityItem->nextPriorityItem;
-    }
     data_[dayIndex] = header->nextItem;
-    delete header;
+    temp = header;
   }
   else
   {
@@ -145,20 +137,27 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
       header = header->nextItem;
       counter++;
     }
-    Item* temp = header->nextItem;
+    temp = header->nextItem;
     header->nextItem = temp->nextItem;
-    if (temp->nextPriorityItem != NULL || temp == priorityEnd_)
+  }
+
+  if (temp->nextPriorityItem != NULL || temp == priorityEnd_)
+  {
+    Item* priorityParse = priorityHead_;
+    if (priorityParse == header)
     {
-      Item* priorityParse = priorityHead_;
-      while (priorityParse->nextPriorityItem != temp)
+      header = priorityParse->nextPriorityItem;
+    }
+    else
+    {
+      while (priorityParse->nextPriorityItem != header)
       {
         priorityParse = priorityParse->nextPriorityItem;
       }
       priorityParse->nextPriorityItem = priorityParse->nextPriorityItem->nextPriorityItem;
     }
-
-    delete temp;
   }
+  delete temp;
 }
 
 size_t DailyTodoList::numDays() const
