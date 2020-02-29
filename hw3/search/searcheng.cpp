@@ -25,13 +25,13 @@ SearchEng::~SearchEng()
 {
   std::map<std::string, WebPage*>::iterator it;
   for (it = allWebPages.begin(); it != allWebPages.end(); ++it)
-    delete [] it->second;
+    delete it->second;
 
   std::map<std::string,PageParser*>::iterator pit;
   for (pit = parserMap.begin(); pit != parserMap.end(); ++pit)
-    delete [] pit->second;
+    delete pit->second;
 
-  delete [] noExtensionParser_;
+  delete noExtensionParser_;
 
 }
 
