@@ -25,12 +25,9 @@ DailyTodoList::~DailyTodoList()
     Item * current = data_[i];
     while (current != NULL)
       {
-        cout << current->val << endl;
-        cout << current->nextItem << endl;
         Item * temp = current;
         current = current->nextItem;
         delete temp;
-        cout << current << endl;
       }
   }
   delete [] data_;
@@ -105,16 +102,16 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
 
 void DailyTodoList::resize(size_t orig_size)
 {
-  //doubles the size of the array
-  Item** dataTemp_ = data_;
+  Item** dataTemp_ = new Item* [orig_size*2];
+  for(size_t i = 0; i < cap_; i++){
+    dataTemp_[i] = data_[i];
+  }
+  for(size_t i = cap_; i < orig_size*2; i++){
+    dataTemp_[i] = NULL;
+  }
   cap_ = orig_size*2;
-  data_ = new Item * [cap_];
-  for (int i = 0; i < orig_size; i++)
-    data_[i] = dataTemp_[i];
-  for (int i = orig_size; i < cap_; i++)
-    data_[i] = NULL;
-  //deallocates previously-used pointers
-  delete [] dataTemp_;
+  delete [] data_;
+  data_ = dataTemp_;
 }
 
 void DailyTodoList::remove(size_t dayIndex, size_t loc)
