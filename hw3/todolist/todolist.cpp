@@ -19,8 +19,13 @@ DailyTodoList::~DailyTodoList()
 {
   for (int i = 0; i < cap_; i++)  //removes each todolist item
   {
-    while(!empty(i))
-      remove(i,0);
+    Item * current = data_[i];
+    while (current != NULL)
+      {
+        Item * temp = current;
+        current = current->nextItem;
+        delete temp;
+      }
   }
   delete [] data_;
 }
