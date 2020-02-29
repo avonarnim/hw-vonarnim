@@ -61,7 +61,30 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
 
-  Item* insertion = new Item(val, NULL, NULL);
+
+  Item* insertion = NULL;
+
+
+  Item* header = data_[dayIndex];
+  size_t counter = 0;
+  if (loc == 0)
+  {
+    insertion = new Item(val, NULL, NULL);
+    insertion->nextItem = header;
+    data_[dayIndex] = insertion;
+  }
+  else
+  {
+    while (counter+1 < loc)
+    {
+      header = header->nextItem;
+      counter++;
+    }
+    insertion = new Item(val, NULL, NULL);
+    Item* temp = header->nextItem;
+    header->nextItem = insertion;
+    insertion->nextItem = temp;
+  }
 
   if (highPriority)
   {
@@ -77,24 +100,6 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
     }
   }
 
-  Item* header = data_[dayIndex];
-  size_t counter = 0;
-  if (loc == 0)
-  {
-    insertion->nextItem = header;
-    data_[dayIndex] = insertion;
-  }
-  else
-  {
-    while (counter+1 < loc)
-    {
-      header = header->nextItem;
-      counter++;
-    }
-    Item* temp = header->nextItem;
-    header->nextItem = insertion;
-    insertion->nextItem = temp;
-  }
   return;
 }
 
@@ -110,10 +115,6 @@ void DailyTodoList::resize(size_t orig_size)
   delete [] dataTemp_;
 }
 
-/*
- *  @throws std::out_of_range
- *    If the location is invalid.
- */
 void DailyTodoList::remove(size_t dayIndex, size_t loc)
 {
   if (loc > numItemsOnDay(dayIndex))
@@ -143,13 +144,13 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
   if (temp->nextPriorityItem != NULL || temp == priorityEnd_)
   {
     Item* priorityParse = priorityHead_;
-    if (priorityParse == header)
+    if (priorityParse == temp)
     {
-      header = priorityParse->nextPriorityItem;
+      priorityParse = priorityParse->nextPriorityItem;
     }
     else
     {
-      while (priorityParse->nextPriorityItem != header)
+      while (priorityParse->nextPriorityItem != temp)
       {
         priorityParse = priorityParse->nextPriorityItem;
       }
@@ -188,7 +189,7 @@ size_t DailyTodoList::numItemsOnDay(size_t dayIndex) const
 
 bool DailyTodoList::empty(size_t dayIndex) const
 {
-  if (dayIndex > cap_)  //>=?
+  if (dayIndex >= cap_)
     throw std::invalid_argument("dayIndex is invalid");
   if (data_[dayIndex] == NULL)  //was data_[dayIndex]->nextItem
     return true;
@@ -200,12 +201,10 @@ const std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc) cons
 {
   if (empty(dayIndex))
     throw std::invalid_argument("dayIndex is invalid");
-  if (dayIndex > cap_)
-    throw std::invalid_argument("dayIndex is invalid");
 
   size_t counter = 0;
   Item* header = data_[dayIndex];
-  while (counter != loc && header != NULL)  // should probably do ""&& header != NULL" to check for loc > size of day to do list
+  while (counter != loc && header != NULL)
   {
     header = header->nextItem;
     counter++;
@@ -218,12 +217,10 @@ std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc)
 {
   if (empty(dayIndex))
     throw std::invalid_argument("dayIndex is invalid");
-  if (dayIndex > cap_)
-    throw std::invalid_argument("dayIndex is invalid");
 
   size_t counter = 0;
   Item* header = data_[dayIndex];
-  while (counter != loc)  // should probably do ""&& header != NULL" to check for loc > size of day to do list
+  while (counter != loc && header != NULL)
   {
     header = header->nextItem;
     counter++;
