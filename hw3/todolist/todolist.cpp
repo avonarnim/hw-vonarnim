@@ -61,30 +61,7 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
 
-
-  Item* insertion = NULL;
-
-
-  Item* header = data_[dayIndex];
-  size_t counter = 0;
-  if (loc == 0)
-  {
-    insertion = new Item(val, NULL, NULL);
-    insertion->nextItem = header;
-    data_[dayIndex] = insertion;
-  }
-  else
-  {
-    while (counter+1 < loc)
-    {
-      header = header->nextItem;
-      counter++;
-    }
-    insertion = new Item(val, NULL, NULL);
-    Item* temp = header->nextItem;
-    header->nextItem = insertion;
-    insertion->nextItem = temp;
-  }
+  Item* insertion = new Item(val, NULL, NULL);
 
   if (highPriority)
   {
@@ -98,6 +75,25 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
       priorityEnd_->nextPriorityItem = insertion;
       priorityEnd_ = insertion;
     }
+  }
+
+  Item* header = data_[dayIndex];
+  size_t counter = 0;
+  if (loc == 0)
+  {
+    insertion->nextItem = header;
+    data_[dayIndex] = insertion;
+  }
+  else
+  {
+    while (counter+1 < loc)
+    {
+      header = header->nextItem;
+      counter++;
+    }
+    Item* temp = header->nextItem;
+    header->nextItem = insertion;
+    insertion->nextItem = temp;
   }
 
   return;
@@ -238,6 +234,8 @@ size_t DailyTodoList::numPriorityItems() const
 const std::string& DailyTodoList::getPriorityVal(size_t priorityLoc) const
 {
   size_t counter = 0;
+  if (priorityLoc >= sizePriorityList)
+    throw std::out_of_range("no item at specified priority location");
   Item* priorityHeader = priorityHead_;
   while (counter != priorityLoc && priorityHeader != NULL)
   {
@@ -245,6 +243,6 @@ const std::string& DailyTodoList::getPriorityVal(size_t priorityLoc) const
     counter++;
   }
   if (priorityHeader == NULL)
-    throw std::invalid_argument("no item at specified priority location");
+    throw std::out_of_range("no item at specified priority location");
   return priorityHeader->val;
 }
