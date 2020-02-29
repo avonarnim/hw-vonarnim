@@ -136,7 +136,7 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
     Item* priorityParse = priorityHead_;
     if (priorityParse == temp)
     {
-      priorityParse = priorityParse->nextPriorityItem;
+      priorityHead_ = priorityParse->nextPriorityItem;
     }
     else
     {
