@@ -86,7 +86,7 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
   }
   else
   {
-    while (counter+1 < loc) //check back
+    while (counter+1 < loc)
     {
       header = header->nextItem;
       counter++;
@@ -110,36 +110,55 @@ void DailyTodoList::resize(size_t orig_size)
   delete [] dataTemp_;
 }
 
-
 /*
  *  @throws std::out_of_range
  *    If the location is invalid.
  */
 void DailyTodoList::remove(size_t dayIndex, size_t loc)
 {
-  if (dayIndex > cap_)
-    throw std::out_of_range("Remove dayIndex is out of range");
+
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
+  if (dayIndex >= cap_)
+    throw std::out_of_range("Remove dayIndex is out of range");
+
   Item* header = data_[dayIndex];
-  int counter = 0;
-  while (counter+1 < loc)
+  if (loc == 0)
   {
-    header = header->nextItem;
-    counter++;
-  }
-  Item* temp = header->nextItem;
-  header->nextItem = temp->nextItem;
-  if (temp->nextPriorityItem != NULL)
-  {
-    Item* priorityParse = priorityHead_;
-    while (priorityParse->nextPriorityItem != header)
+    if (header->nextPriorityItem != NULL || header == priorityEnd_)
     {
-      priorityParse = priorityParse->nextPriorityItem;
+      Item* priorityParse = priorityHead_;
+      while (priorityParse->nextPriorityItem != header)
+      {
+        priorityParse = priorityParse->nextPriorityItem;
+      }
+      priorityParse->nextPriorityItem = priorityParse->nextPriorityItem->nextPriorityItem;
     }
-    priorityParse->nextPriorityItem = priorityParse->nextPriorityItem->nextPriorityItem;
+    data_[dayIndex] = header->nextItem;
+    delete header;
   }
-  delete [] temp;
+  else
+  {
+    int counter = 0;
+    while (counter+1 < loc)
+    {
+      header = header->nextItem;
+      counter++;
+    }
+    Item* temp = header->nextItem;
+    header->nextItem = temp->nextItem;
+    if (temp->nextPriorityItem != NULL || temp == priorityEnd_)
+    {
+      Item* priorityParse = priorityHead_;
+      while (priorityParse->nextPriorityItem != temp)
+      {
+        priorityParse = priorityParse->nextPriorityItem;
+      }
+      priorityParse->nextPriorityItem = priorityParse->nextPriorityItem->nextPriorityItem;
+    }
+
+    delete temp;
+  }
 }
 
 size_t DailyTodoList::numDays() const
