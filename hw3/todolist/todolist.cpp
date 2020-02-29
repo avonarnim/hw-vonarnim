@@ -17,7 +17,7 @@ DailyTodoList::DailyTodoList()
 
 DailyTodoList::~DailyTodoList()
 {
-  for (int i = 0; i < cap_; i++)
+  for (int i = 0; i < cap_; i++)  //removes each todolist item
   {
     while(!empty(i))
       remove(i,0);
@@ -38,32 +38,20 @@ void DailyTodoList::push_back(size_t dayIndex, const std::string& val, bool high
 
 }
 
-/**
- *  @param[in] dayIndex
- *    Day index of the to-do list that val should be inserted into.
- *  @param[in] loc
- *    Location to insert the new value in the given day's to-do list
- *  @param[in] val
- *    String value to insert
- *  @param[in] highPriority
- *    True if this value should also be added to the end of the high priority list
- *  @throws std::out_of_range - If the location is beyond the end of the given to-do list.
- *  @throws std::bad_alloc -  Memory could not be allocated
- */
 void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, bool highPriority)
 {
-
+  //will resize if loc == 0 & if dayIndex >= cap_
   if (dayIndex >= cap_)
     if (loc == 0)
       resize(dayIndex);
     else
       throw std::out_of_range("insert loc is out of range");
-
+  //will throw an error if loc > numItemsOnDay
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
-
+  //creates item to be inserted
   Item* insertion = new Item(val, NULL, NULL);
-
+  //inserts into high priority list as appropriate
   if (highPriority)
   {
     sizePriorityList++;
@@ -80,14 +68,14 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
 
   Item* header = data_[dayIndex];
   size_t counter = 0;
-  if (loc == 0)
+  if (loc == 0) //for if inserting at the beginning of a list
   {
     insertion->nextItem = header;
     data_[dayIndex] = insertion;
   }
   else
   {
-    while (counter+1 < loc)
+    while (counter+1 < loc) //finds the item before the insertion spot
     {
       header = header->nextItem;
       counter++;
@@ -102,6 +90,7 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
 
 void DailyTodoList::resize(size_t orig_size)
 {
+  //doubles the size of the array
   Item** dataTemp_ = data_;
   cap_ = orig_size*2;
   data_ = new Item * [cap_];
@@ -109,11 +98,13 @@ void DailyTodoList::resize(size_t orig_size)
     data_[i] = dataTemp_[i];
   for (int i = orig_size; i < cap_; i++)
     data_[i] = NULL;
+  //deallocates previously-used pointers
   delete [] dataTemp_;
 }
 
 void DailyTodoList::remove(size_t dayIndex, size_t loc)
 {
+  //throws errors if the dayIndex/loc are invalid
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
   if (dayIndex >= cap_)
@@ -121,6 +112,7 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
 
   Item* header = data_[dayIndex];
   Item* temp = NULL;
+  //takes the desired item out of the array
   if (loc == 0)
   {
     data_[dayIndex] = header->nextItem;
@@ -137,7 +129,7 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
     temp = header->nextItem;
     header->nextItem = temp->nextItem;
   }
-
+  //takes the desire item out of the priority list
   if (temp->nextPriorityItem != NULL || temp == priorityEnd_)
   {
     sizePriorityList--;
@@ -155,6 +147,7 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
       priorityParse->nextPriorityItem = priorityParse->nextPriorityItem->nextPriorityItem;
     }
   }
+  //deletes item
   delete temp;
 }
 
@@ -163,21 +156,13 @@ size_t DailyTodoList::numDays() const
   return cap_;
 }
 
-/**
- *  Returns the number of items in the to-do list for the given day
- *
- *  @param[in] dayIndex
- *    Index of the day to return the number of to-do list items
- *  @throws std::out_of_range
- *    If the dayIndex is invalid.
- */
 size_t DailyTodoList::numItemsOnDay(size_t dayIndex) const
 {
   if (empty(dayIndex))
     return 0;
   size_t counter = 0;
   Item* header = data_[dayIndex];
-  while (header != NULL)
+  while (header != NULL)  //traverses the list, counting
   {
     header = header->nextItem;
     counter++;
@@ -189,7 +174,7 @@ bool DailyTodoList::empty(size_t dayIndex) const
 {
   if (dayIndex >= cap_)
     throw std::invalid_argument("dayIndex is invalid");
-  if (data_[dayIndex] == NULL)  //was data_[dayIndex]->nextItem
+  if (data_[dayIndex] == NULL)  //checks if the first element exists
     return true;
   else
     return false;
@@ -202,14 +187,14 @@ const std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc) cons
 
   size_t counter = 0;
   Item* header = data_[dayIndex];
-  while (counter != loc && header != NULL)
+  while (counter != loc && header != NULL)  //traverses to loc
   {
     header = header->nextItem;
     counter++;
   }
   if (header == NULL)
     throw std::invalid_argument("no item at the specified location");
-  return header->val;
+  return header->val; //returns val at loc
 }
 std::string& DailyTodoList::getNormalVal(size_t dayIndex, size_t loc)
 {
@@ -239,12 +224,12 @@ const std::string& DailyTodoList::getPriorityVal(size_t priorityLoc) const
   if (priorityLoc >= sizePriorityList)
     throw std::out_of_range("no item at specified priority location");
   Item* priorityHeader = priorityHead_;
-  while (counter != priorityLoc && priorityHeader != NULL)
+  while (counter != priorityLoc && priorityHeader != NULL)  //traverses list
   {
     priorityHeader = priorityHeader->nextPriorityItem;
     counter++;
   }
   if (priorityHeader == NULL)
     throw std::out_of_range("no item at specified priority location");
-  return priorityHeader->val;
+  return priorityHeader->val; //returns item's value
 }
