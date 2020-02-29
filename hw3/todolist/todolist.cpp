@@ -52,6 +52,7 @@ void DailyTodoList::push_back(size_t dayIndex, const std::string& val, bool high
  */
 void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, bool highPriority)
 {
+
   if (dayIndex >= cap_)
     if (loc == 0)
       resize(dayIndex);
@@ -242,7 +243,7 @@ const std::string& DailyTodoList::getPriorityVal(size_t priorityLoc) const
     priorityHeader = priorityHeader->nextPriorityItem;
     counter++;
   }
-  if (priorityHeader == NULL)
-    throw std::out_of_range("no item at specified priority location");
+  //if (priorityHeader == NULL)
+  //  throw std::out_of_range("no item at specified priority location");
   return priorityHeader->val;
 }
