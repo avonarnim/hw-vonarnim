@@ -52,11 +52,14 @@ void DailyTodoList::push_back(size_t dayIndex, const std::string& val, bool high
  */
 void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, bool highPriority)
 {
+  if (dayIndex >= cap_)
+    if (loc == 0)
+      resize(dayIndex);
+    else
+      throw std::out_of_range("insert loc is out of range");
+
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
-
-  if (loc == 0 && dayIndex >= cap_)
-    resize(dayIndex);
 
   Item* insertion = new Item(val, NULL, NULL);
 
