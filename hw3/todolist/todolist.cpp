@@ -140,6 +140,7 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
 
   if (temp->nextPriorityItem != NULL || temp == priorityEnd_)
   {
+    sizePriorityList--;
     Item* priorityParse = priorityHead_;
     if (priorityParse == temp)
     {
