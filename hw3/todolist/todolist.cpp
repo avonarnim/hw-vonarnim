@@ -107,7 +107,7 @@ void DailyTodoList::resize(size_t orig_size)
   data_ = new Item * [cap_];
   for (int i = 0; i < orig_size; i++)
     data_[i] = dataTemp_[i];
-  for (int i = orig_size; i < 2*cap_; i++)
+  for (int i = orig_size; i < cap_; i++)
     data_[i] = NULL;
   delete [] dataTemp_;
 }
@@ -243,7 +243,7 @@ const std::string& DailyTodoList::getPriorityVal(size_t priorityLoc) const
     priorityHeader = priorityHeader->nextPriorityItem;
     counter++;
   }
-  //if (priorityHeader == NULL)
-  //  throw std::out_of_range("no item at specified priority location");
+  if (priorityHeader == NULL)
+    throw std::out_of_range("no item at specified priority location");
   return priorityHeader->val;
 }
