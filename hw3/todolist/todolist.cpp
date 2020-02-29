@@ -19,15 +19,15 @@ DailyTodoList::~DailyTodoList()
 {
   for (int i = 0; i < cap_; i++)  //removes each todolist item
   {
-    while (!empty(i))
-      remove(i,0);
-    /*Item * current = data_[i];
+  //  while (!empty(i))
+  //    remove(i,0);
+    Item * current = data_[i];
     while (current != NULL)
       {
         Item * temp = current;
         current = current->nextItem;
         delete temp;
-      }*/
+      }
   }
   delete [] data_;
 }
@@ -120,8 +120,6 @@ void DailyTodoList::remove(size_t dayIndex, size_t loc)
   Item* header = data_[dayIndex];
   Item* temp = NULL;
   //takes the desired item out of the array
-  if (data_[dayIndex] == NULL)
-    return;
   if (loc == 0)
   {
     data_[dayIndex] = header->nextItem;
