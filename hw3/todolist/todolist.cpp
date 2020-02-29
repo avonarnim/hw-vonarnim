@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include "todolist.h"
+#include <iostream>
 using namespace std;
 
 
@@ -13,20 +14,23 @@ DailyTodoList::DailyTodoList()
     // Add any addition code here
     sizePriorityList = 0;
     priorityEnd_ = NULL;
+    for (int i = 0; i < cap_; i++)
+      data_[i] = NULL;
 }
 
 DailyTodoList::~DailyTodoList()
 {
   for (int i = 0; i < cap_; i++)  //removes each todolist item
   {
-  //  while (!empty(i))
-  //    remove(i,0);
     Item * current = data_[i];
     while (current != NULL)
       {
+        cout << current->val << endl;
+        cout << current->nextItem << endl;
         Item * temp = current;
         current = current->nextItem;
         delete temp;
+        cout << current << endl;
       }
   }
   delete [] data_;
@@ -50,9 +54,13 @@ void DailyTodoList::insert(size_t dayIndex, size_t loc, const std::string& val, 
   //will resize if loc == 0 & if dayIndex >= cap_
   if (dayIndex >= cap_)
     if (loc == 0)
+    {
       resize(dayIndex);
+    }
     else
+    {
       throw std::out_of_range("insert loc is out of range");
+    }
   //will throw an error if loc > numItemsOnDay
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
