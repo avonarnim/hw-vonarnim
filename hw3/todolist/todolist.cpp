@@ -116,14 +116,13 @@ void DailyTodoList::resize(size_t orig_size)
  */
 void DailyTodoList::remove(size_t dayIndex, size_t loc)
 {
-
   if (loc > numItemsOnDay(dayIndex))
     throw std::out_of_range("insert loc is out of range");
   if (dayIndex >= cap_)
     throw std::out_of_range("Remove dayIndex is out of range");
 
   Item* header = data_[dayIndex];
-  Item* temp;
+  Item* temp = NULL;
   if (loc == 0)
   {
     data_[dayIndex] = header->nextItem;
