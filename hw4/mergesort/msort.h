@@ -8,26 +8,31 @@
  */
 template <class T, class Compare >
 void mergeSort(std::vector<T>& list, Compare comp );
-void msort(vector<T>& list, vector<T>& output, int left, int right, Compare comp);
-void merge(std::vector<T>& list, vector<T>& output, int left, int middle, int middle, int right, Compare comp);
+template <class T, class Compare >
+void msort(std::vector<T>& list, std::vector<T>& output, int left, int right, Compare comp);
+template <class T, class Compare >
+void merge(std::vector<T>& list, std::vector<T>& output, int left, int middle1, int middle2, int right, Compare comp);
 
+template <class T, class Compare >
 void mergeSort(std::vector<T>& list, Compare comp)
 {
-  vector<T> newList(list);  //copy of array
-  msort(newList, list, 0, mlist.size());
+  std::vector<T> newList(list);  //copy of array
+  msort(newList, list, 0, list.size(), comp);
 }
 
-void msort(vector<T>& list, vector<T>& output, int left, int right, Compare comp)
+template <class T, class Compare >
+void msort(std::vector<T>& list, std::vector<T>& output, int left, int right, Compare comp)
 {
   if (left >= right) return;
   int mid = (left+right)/2;
-  msort(list, output, left, mid);
-  msort(list, output, mid, end);
-  merge(list, output, left, mid, mid, right);
+  msort(list, output, left, mid, comp);
+  msort(list, output, mid, right, comp);
+  merge(list, output, left, mid, mid, right, comp);
 }
 
 //will merge two lists
-void merge(std::vector<T>& list, vector<T>& output, int left, int middle1, int middle2, int right, Compare comp)
+template <class T, class Compare >
+void merge(std::vector<T>& list, std::vector<T>& output, int left, int middle1, int middle2, int right, Compare comp)
 {
   while (middle2 < right)
   {

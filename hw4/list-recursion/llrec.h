@@ -42,8 +42,6 @@ struct Node
  *
  */
 void llpivot(Node *&head, Node *&smaller, Node *&larger, int pivot);
-bool largeEmpty = true;
-bool smallEmpty = true;
 
 /**
  * Given a linked list pointed to by head, removes (filters out) nodes
@@ -78,27 +76,26 @@ Node* llfilter(Node* head, Comp pred)
 
     //returns if you have reached end of list or if list is empty
     if (head == NULL)
-      return;
-    if (head->next != NULL)
-    {
+      return head;
+
     //while used for repeated nodes meeting criteria
-      while (pred(head->next->val))
-      {
-        //code for removing one matching node
-        Node* temp = head->next;
-        head->next = head->next->next;
-        delete temp;
-      }
+    while (head->next != NULL && pred(head->next->val))
+    {
+      //code for removing one matching node
+      Node* temp = head->next;
+      head->next = head->next->next;
+      delete temp;
     }
+
     llfilter(head->next, pred);
-    // this will run for multiple times but only have a potential effect on
-    // the first node in the list
+    // this has a potential effect on the first & last nodes
     if (pred(head->val))
     {
       Node* temp = head;
       head = head->next;
       delete temp;
     }
+    return head;
 }
 
 #endif

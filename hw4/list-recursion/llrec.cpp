@@ -23,42 +23,22 @@ void llpivot(Node *&head, Node *&smaller, Node *&larger, int pivot)
     temp = smaller;
     smaller = head;
     head = head->next;
-    //below is a try-catch i'm not sure works. if works, get rid of smallEmpty variable.
-    /*
-    try {
-    smaller->next = temp->next; }
-    catch ("temp->next is garbage")
-    {
-      smaller->next = NULL;
-    }
-    */
-    if (smallEmpty)
+
+    if (temp == NULL)
       smaller->next = NULL;
     else
-      smaller->next = temp->next;
-    smallEmpty = false;
+      smaller->next = temp;
   }
   else if (head->val > pivot)
   {
     temp = larger;
     larger = head;
     head = head->next;
-    //below is a try-catch i'm not sure works. if works, get rid of largeEmpty variable.
-    /*
-    try {
-    larger->next = temp->next; }
-    catch ("temp->next is garbage")
-    {
-      larger->next = NULL;
-    }
-    */
-    if (largeEmpty)
+
+    if (temp == NULL)
       larger->next = NULL;
     else
-      larger->next = temp->next;
-    largeEmpty = false;
+      larger->next = temp;
   }
-  llpivot(head->next, smaller, larger, pivot);
-  smallEmpty = true;
-  largeEmpty = true;
+  llpivot(head, smaller, larger, pivot);
 }
