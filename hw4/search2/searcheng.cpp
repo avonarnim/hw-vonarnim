@@ -210,8 +210,9 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
     ++cit;
   }
 
-  vector<double> probabilities(candidates.size(), 1/candidates.size());
-  vector<double> tempProb(candidates.size(), 1/candidates.size());
+  vector<double> probabilities(candidates.size(), 1.0/candidates.size());
+  std::cout << probabilities[0] << std::endl;
+  vector<double> tempProb(candidates.size(), 1.0/candidates.size());
   int steps = 20;
   double epsilon = .15/candidates.size();
   double epsilon_c = 1-epsilon;
