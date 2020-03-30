@@ -195,7 +195,8 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   //cit and init keep track of candidate set positions
   for (int j = 0; j < candidates.size(); j++)
   {
-    count = (*cit)->outgoing_links().size()+1; //may need to do checking for pre-existent outgoing link to self?
+    //count = (*cit)->outgoing_links().size()+1; //may need to do checking for pre-existent outgoing link to self?
+    count = (*cit)->outgoing_links().size()+1;
     init = candidates.begin();
     for (int k = 0; k < candidates.size(); ++k)
     {
@@ -205,14 +206,14 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
         adj[j][k] = 0;
       ++init;
     }
-    adj[j][j] = 1/count;
+    //adj[j][j] = 1/count;
     ++cit;
   }
 
   vector<double> probabilities(candidates.size(), 1/candidates.size());
   vector<double> tempProb(candidates.size(), 1/candidates.size());
   int steps = 20;
-  double epsilon = .15;
+  double epsilon = .15/candidates.size();
   double epsilon_c = 1-epsilon;
   for (int t = 0; t < steps; ++t)
   {
