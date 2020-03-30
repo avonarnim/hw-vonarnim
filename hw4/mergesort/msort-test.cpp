@@ -25,9 +25,11 @@ int main()
     std::vector<int> testing;
     genRandIntVector(testing, 20);
     mergeSort(testing, std::less<int>());
-    verifySorted(testing, std::less<int>());
-
-
+    if(verifySorted(testing, std::less<int>()))
+      cout << "it is sorted" << endl;
+    else
+      cout << "you have failed" << endl;
+      
     return 0;
 }
 
