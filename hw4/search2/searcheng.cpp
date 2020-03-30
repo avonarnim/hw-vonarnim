@@ -189,7 +189,7 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   std::set<WebPage*>::iterator init;
   //count is the size of each candidate's out_links_ set,
   //lets us know the weights in the adjacency matrix
-  int count = 0;
+  double count = 0;
   //loops through every candidate as a source & as a target
   //j and k keep track of positions in the probs matrix
   //cit and init keep track of candidate set positions
@@ -199,7 +199,7 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
     init = candidates.begin();
     for (int k = 0; k < candidates.size(); ++k)
     {
-      if ((*cit)->outgoing_links().find(*init) != (*cit)->outgoing_links().end())
+      if ((*cit)->outgoing_links().find((*init)) != (*cit)->outgoing_links().end())
         adj[j][k] = 1/count;
       else
         adj[j][k] = 0;
