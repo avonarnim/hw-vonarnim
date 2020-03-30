@@ -236,7 +236,7 @@ struct RankComp {
 struct AlphabetComp {
   bool operator()(const std::pair<WebPage*, double>& lhs, const std::pair<WebPage*, double>& rhs)
   {
-    return lhs.first->filename() > rhs.first->filename();
+    return lhs.first->filename() < rhs.first->filename();
   }
 };
 
