@@ -81,13 +81,11 @@ std::string TXTParser::display_text(std::string filename)
     return retval;
 }
 
-void crawl(const std::map<std::string, PageParser*>& parsers,
+void TXTParser::crawl(const std::map<std::string, PageParser*>& parsers,
     std::string filename, std::set<std::string>& processed, std::ostream& ofile)
 {
-  std::set<std::string>&::iterator it = processed.find(filename);
-  if (it == processed.end())
-    continue;
-  else
+  std::set<std::string>::iterator it = processed.find(filename);
+  if (it != processed.end())
     return;
 
   // Attempts to open the file.

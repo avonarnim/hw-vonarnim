@@ -1,6 +1,7 @@
 #include "cmdhandler.h"
 #include "util.h"
 #include "msort.h"
+#include "combiners.h"
 
 using namespace std;
 
@@ -145,7 +146,7 @@ Handler::HANDLER_STATUS_T AndHandler::process(SearchEng* eng, std::istream& inst
 {
   std::vector<std::string> terms;
   string temp;
-  WebPageSetCombiner* an = new ANDWebPageSetCombiner(); //either change to non-da or check destructor
+  WebPageSetCombiner* an = new ANDWebPageSetCombiner();
   while(instr >> temp)
   {
     temp = conv_to_lower(temp);
@@ -228,19 +229,19 @@ Handler::HANDLER_STATUS_T OrHandler::process(SearchEng* eng, std::istream& instr
 struct RankComp {
   bool operator()(const std::pair<WebPage*, double>& lhs, const std::pair<WebPage*, double>& rhs)
   {
-    return lhs->second > rhs->second;
+    return lhs.second > rhs.second;
   }
 };
 
 struct AlphabetComp {
   bool operator()(const std::pair<WebPage*, double>& lhs, const std::pair<WebPage*, double>& rhs)
   {
-    return lhs->first->filename > rhs->first->filename;
+    return lhs.first->filename() > rhs.first->filename();
   }
 };
 
 
-PrandHandler::PrandHangler()
+PrandHandler::PrandHandler()
 {}
 PrandHandler::PrandHandler(Handler* next) : Handler(next)
 {}
@@ -263,7 +264,7 @@ Handler::HANDLER_STATUS_T PrandHandler::process(SearchEng* eng, std::istream& in
   }
   const WebPageSet a = eng->search(terms, andObj);
   prVector = eng->pageRank(a);
-  if (preference == 'r' || preference == "R")
+  if (preference == 'r' || preference == 'R')
   {
     RankComp compare;
     mergeSort(prVector, compare);
@@ -279,7 +280,7 @@ Handler::HANDLER_STATUS_T PrandHandler::process(SearchEng* eng, std::istream& in
   return HANDLER_OK;
 }
 
-ProrHandler::ProrHangler()
+ProrHandler::ProrHandler()
 {
 
 }
@@ -306,7 +307,7 @@ Handler::HANDLER_STATUS_T ProrHandler::process(SearchEng* eng, std::istream& ins
   }
   const WebPageSet a = eng->search(terms, orObj);
   prVector = eng->pageRank(a);
-  if (preference == 'r' || preference == "R")
+  if (preference == 'r' || preference == 'R')
   {
     RankComp compare;
     mergeSort(prVector, compare);

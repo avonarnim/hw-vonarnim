@@ -29,7 +29,7 @@ int main()
       cout << "it is sorted" << endl;
     else
       cout << "you have failed" << endl;
-      
+    
     return 0;
 }
 

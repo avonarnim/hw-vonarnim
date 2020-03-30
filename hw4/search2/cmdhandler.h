@@ -107,7 +107,7 @@ protected:
 class PrandHandler : public Handler
 {
 public:
-  PrandHangler();
+  PrandHandler();
   PrandHandler(Handler* next);
 protected:
   virtual bool canHandle(const std::string& cmd) const;
@@ -117,7 +117,7 @@ protected:
 class ProrHandler : public Handler
 {
 public:
-  ProrHangler();
+  ProrHandler();
   ProrHandler(Handler* next);
 protected:
   virtual bool canHandle(const std::string& cmd) const;

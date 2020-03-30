@@ -106,7 +106,7 @@ public:
       unexpanded candidate set of web pages
     @return vector of pairs of webpage pointers & their pagerank scores
     */
-    std::vector<std::pair<WebPage*, double>> pageRank(const WebPageSet& in_pages);
+    std::vector<std::pair<WebPage*, double> > pageRank(const WebPageSet& in_pages);
 
 private:
     // Helper function to read/parse a single page

@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 
 /**
  * Performs mergesort on the provided vector using
@@ -55,5 +56,9 @@ void merge(std::vector<T>& list, std::vector<T>& output, int start, int middle1,
     output[outputCounter] = list[start];
     outputCounter++;
     start++;
+  }
+  for (int i = 0; i < list.size(); i++)
+  {
+    list[i] = output[i];
   }
 }

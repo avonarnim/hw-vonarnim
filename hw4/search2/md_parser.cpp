@@ -177,13 +177,11 @@ std::string MDParser::display_text(std::string filename)
     return retval;
 }
 
-void crawl(const std::map<std::string, PageParser*>& parsers,
+void MDParser::crawl(const std::map<std::string, PageParser*>& parsers,
     std::string filename, std::set<std::string>& processed, std::ostream& ofile)
 {
-  std::set<std::string>&::iterator it = processed.find(filename);
-  if (it == processed.end())
-    continue;
-  else
+  std::set<std::string>::iterator it = processed.find(filename);
+  if (it != processed.end())
     return;
 
   // Attempts to open the file.
@@ -258,9 +256,8 @@ void crawl(const std::map<std::string, PageParser*>& parsers,
         else {
           link = conv_to_lower(link);
           string extension = extract_extension(link);
-          std::map<std::string,PageParser*>&::iterator pit = parsers.find(extension);
-          if (pit != parsers.end())
-            it->second->crawl(parsers, link, processed, ofile);
+          if (parsers.find(extension) != parsers.end())
+            crawl(parsers, link, processed, ofile);
           link = "";
           state = NORMALTEXT;
         }

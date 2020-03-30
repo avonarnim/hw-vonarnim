@@ -17,15 +17,17 @@ int main(int argc, char* argv[])
     }
 
     // ---------------------- [TO BE COMPLETED] -------------------------------
-    ifstream ifile(argv[2].c_str());
+    ifstream ifile(argv[2]);
     if (ifile.fail())
-      cerr << Unable to open source file: << argv[2] << endl;
-    ostream ofile(argv[3]);
+      cerr << "Unable to open source file: " << argv[2] << endl;
+    ofstream outfile(argv[3]);
 
     //make parsers
     std::map<std::string, PageParser*> parsers;
     parsers.insert(std::make_pair("md", new MDParser));
     parsers.insert(std::make_pair("txt", new TXTParser));
+    //holds all filenames that've been processed
+    std::set<std::string> processed;
 
     // crawl all the files
     string filename;
@@ -35,15 +37,15 @@ int main(int argc, char* argv[])
       string extension = extract_extension(filename);
       pit = parsers.find(extension);
       if (pit != parsers.end())
-        it->second->crawl(parsers, filename, processed, ofile);
+        pit->second->crawl(parsers, filename, processed, outfile);
     }
     ifile.close();
-    ofile.close();
+    outfile.close();
 
     // You may add cleanup code here if necessary
     for (pit = parsers.begin(); pit != parsers.end(); pit++)
     {
-      delete parsers[pit]->second;
+      delete pit->second;
     }
 
     return 0;

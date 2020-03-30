@@ -167,20 +167,20 @@ Performs the PageRank algorithm on the webpages in the input set
   unexpanded candidate set of web pages
 @return vector of pairs of webpage pointers & their pagerank scores
 */
-std::vector<std::pair<WebPage*, double>> SearchEng::pageRank(const WebPageSet& in_pages)
+std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& in_pages)
 {
   //expand the candidate search results
   WebPageSet candidates;
   for (std::set<WebPage*>::iterator it = in_pages.begin(); it != in_pages.end(); ++it)
   {
-    candidates.insert(in_pages[it])
-    for (std::set<WebPage*>::iterator init = in_pages[it].in_links_.begin(); init != in_pages[it].in_links_.end(); ++init)
-      candidates.insert(in_pages[it].in_links_[init]);
-    for (std::set<WebPage*>::iterator outit = in_pages[it].out_links_.begin(); outit != in_pages[it].out_links_.end(); ++outit)
-      candidates.insert(in_pages[it].out_links_[outit]);
+    candidates.insert(*it);
+    for (std::set<WebPage*>::iterator init = (*it)->incoming_links().begin(); init != (*it)->incoming_links().end(); ++init)
+      candidates.insert(*init);
+    for (std::set<WebPage*>::iterator outit = (*it)->outgoing_links().begin(); outit != (*it)->outgoing_links().end(); ++outit)
+      candidates.insert(*outit);
   }
   //create probabilities adjacency matrix
-  double ** adj = new *double[candidates.size()];
+  double ** adj = new double*[candidates.size()];
   for (int i = 0; i < candidates.size(); i++)
     adj[i] = new double[candidates.size()];
   //cit keeps track of which candidate row we're on
@@ -194,11 +194,11 @@ std::vector<std::pair<WebPage*, double>> SearchEng::pageRank(const WebPageSet& i
   //cit and init keep track of candidate set positions
   for (int j = 0; j < candidates.size(); j++)
   {
-    count = *cit.out_links_.size();
+    count = (*cit)->outgoing_links().size();
     init = candidates.begin();
     for (int k = 0; k < candidates.size(); ++k)
     {
-      if (*cit.out_links_.find(*init) != *cit.out_links_.end())
+      if ((*cit)->outgoing_links().find(*init) != (*cit)->outgoing_links().end())
         adj[j][k] = 1/count;
       else
         adj[j][k] = 0;
@@ -206,8 +206,9 @@ std::vector<std::pair<WebPage*, double>> SearchEng::pageRank(const WebPageSet& i
     }
     ++cit;
   }
+  //Q: am i considering "self-loops" (above and below)
   vector<double> probabilities(candidates.size(), 1/candidates.size());
-  vector<double> tempProb(candidates.size(), 1/candidates.size()));
+  vector<double> tempProb(candidates.size(), 1/candidates.size());
   int steps = 20;
   for (int t = 0; t < steps; ++t)
   {
@@ -218,15 +219,15 @@ std::vector<std::pair<WebPage*, double>> SearchEng::pageRank(const WebPageSet& i
       {
         product += adj[m][n]*probabilities[n];
       }
-      tempProb[n] = product;
+      tempProb[m] = product;
     }
     probabilities = tempProb;
   }
-  vector<std::pair<Webpage*, double>> prVector;
+  vector<std::pair<WebPage*, double> > prVector;
   std::set<WebPage*>::iterator fit = candidates.begin();
   for (int a = 0; a < candidates.size(); ++a)
   {
-    prVector.insert(std::make_pair(*fit, probabilities[a]));
+    prVector.push_back(std::make_pair(*fit, probabilities[a]));
     ++fit;
   }
   return prVector;
