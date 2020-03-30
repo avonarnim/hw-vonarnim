@@ -173,11 +173,11 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   WebPageSet candidates;
   for (std::set<WebPage*>::iterator it = in_pages.begin(); it != in_pages.end(); ++it)
   {
-    candidates.insert(*it);
+    candidates.insert(*it); //will add all in_pages, skipping if already inserted
     for (std::set<WebPage*>::iterator init = (*it)->incoming_links().begin(); init != (*it)->incoming_links().end(); ++init)
-      candidates.insert(*init);
+      candidates.insert(*init);  //adds all pages in the in_page's incoming links
     for (std::set<WebPage*>::iterator outit = (*it)->outgoing_links().begin(); outit != (*it)->outgoing_links().end(); ++outit)
-      candidates.insert(*outit);
+      candidates.insert(*outit); //adds all pages in the in_page's outgoing links
   }
   //create probabilities adjacency matrix
   double ** adj = new double*[candidates.size()];
@@ -185,16 +185,17 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
     adj[i] = new double[candidates.size()];
   //cit keeps track of which candidate row we're on
   std::set<WebPage*>::iterator cit = candidates.begin();
-  //init keeps track of which node we're checking is in the out_links_ set
+  //init keeps track of which node we're checking in the out_links_ set
   std::set<WebPage*>::iterator init;
-  //count is the size of each candidate's out_links_ set, letting us know the weights in the adjacency matrix
+  //count is the size of each candidate's out_links_ set,
+  //lets us know the weights in the adjacency matrix
   int count = 0;
   //loops through every candidate as a source & as a target
   //j and k keep track of positions in the probs matrix
   //cit and init keep track of candidate set positions
   for (int j = 0; j < candidates.size(); j++)
   {
-    count = (*cit)->outgoing_links().size();
+    count = (*cit)->outgoing_links().size()+1; //may need to do checking for pre-existent outgoing link to self?
     init = candidates.begin();
     for (int k = 0; k < candidates.size(); ++k)
     {
@@ -204,24 +205,27 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
         adj[j][k] = 0;
       ++init;
     }
+    adj[j][j] = 1/count;
     ++cit;
   }
-  //Q: am i considering "self-loops" (above and below)
+
   vector<double> probabilities(candidates.size(), 1/candidates.size());
   vector<double> tempProb(candidates.size(), 1/candidates.size());
   int steps = 20;
+  double epsilon = .15;
+  double epsilon_c = 1-epsilon;
   for (int t = 0; t < steps; ++t)
   {
     for (int m = 0; m < candidates.size(); ++m)
     {
-      double product = 0;
+      double summation = epsilon;
       for (int n = 0; n < candidates.size(); ++n)
       {
-        product += adj[m][n]*probabilities[n];
+        summation += adj[n][m]*probabilities[n]*epsilon_c;
       }
-      tempProb[m] = product;
+      tempProb[m] = summation;
     }
-    probabilities = tempProb;
+    probabilities = tempProb; //should copy over entire vector
   }
   vector<std::pair<WebPage*, double> > prVector;
   std::set<WebPage*>::iterator fit = candidates.begin();

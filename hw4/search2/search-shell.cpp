@@ -37,6 +37,8 @@ int main(int argc, char* argv[])
     AndHandler* aHand = new AndHandler();
     OrHandler* orHand = new OrHandler();
     DiffHandler* dHand = new DiffHandler();
+    ProrHandler* prorHand = new ProrHandler();
+    PrandHandler* prandHand = new PrandHandler();
 
     ui.add_handler(qHand);
     ui.add_handler(pHand);
@@ -45,6 +47,8 @@ int main(int argc, char* argv[])
     ui.add_handler(aHand);
     ui.add_handler(orHand);
     ui.add_handler(dHand);
+    ui.add_handler(prorHand);
+    ui.add_handler(prandHand);
 
     // ------------------------------------------------------------------------
 

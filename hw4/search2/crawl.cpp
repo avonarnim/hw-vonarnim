@@ -17,10 +17,10 @@ int main(int argc, char* argv[])
     }
 
     // ---------------------- [TO BE COMPLETED] -------------------------------
-    ifstream ifile(argv[2]);
+    ifstream ifile(argv[1]);
     if (ifile.fail())
       cerr << "Unable to open source file: " << argv[2] << endl;
-    ofstream outfile(argv[3]);
+    ofstream outfile(argv[2]);
 
     //make parsers
     std::map<std::string, PageParser*> parsers;
