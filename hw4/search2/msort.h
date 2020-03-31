@@ -56,7 +56,7 @@ void merge(std::vector<T>& list, std::vector<T>& output, int start, int middle1,
     outputCounter++;
     start++;
   }
-  for (int i = 0; i < list.size(); i++)
+  for (unsigned int i = 0; i < list.size(); i++)
   {
     list[i] = output[i];
   }

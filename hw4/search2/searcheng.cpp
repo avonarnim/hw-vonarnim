@@ -97,7 +97,7 @@ WebPageSet SearchEng::search(const std::vector<std::string>& terms, WebPageSetCo
   it = allKeywords.find(terms[0]);  //what if its empty
   if (it != allKeywords.end())
     a = it->second;
-  for (int i = 1; i < terms.size(); i++)
+  for (unsigned int i = 1; i < terms.size(); i++)
   {
     wit = allKeywords.find(terms[i]);  //gets WebPageSet of all pages w/ term i
     a = combiner->combine(a, wit->second);
@@ -181,7 +181,7 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   }
   //create probabilities adjacency matrix
   double ** adj = new double*[candidates.size()];
-  for (int i = 0; i < candidates.size(); i++)
+  for (unsigned int i = 0; i < candidates.size(); i++)
     adj[i] = new double[candidates.size()];
   //cit keeps track of which candidate row we're on
   std::set<WebPage*>::iterator cit = candidates.begin();
@@ -190,11 +190,11 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   //count is the size of each candidate's out_links_ set,
   //lets us know the weights in the adjacency matrix
   vector<double> count;
-  for (int i = 0; i < candidates.size(); i++)
+  for (unsigned int i = 0; i < candidates.size(); i++)
   {
     count.push_back(0);
     init = (*cit)->outgoing_links().begin();
-    for (int j = 0; j < (*cit)->outgoing_links().size(); j++)
+    for (unsigned int j = 0; j < (*cit)->outgoing_links().size(); j++)
     {
       if (candidates.find((*init)) != candidates.end())
       {
@@ -209,10 +209,10 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   //j and k keep track of positions in the probs matrix
   //cit and init keep track of candidate set positions
   cit = candidates.begin();
-  for (int i = 0; i < candidates.size(); i++)
+  for (unsigned int i = 0; i < candidates.size(); i++)
   {
     init = candidates.begin();
-    for (int j = 0; j < candidates.size(); ++j)
+    for (unsigned int j = 0; j < candidates.size(); ++j)
     {
       if ((*cit)->outgoing_links().find((*init)) != (*cit)->outgoing_links().end())
         adj[i][j] = 1/count[i];
@@ -232,10 +232,10 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   double epsilonComp = 1-.15;
   for (int t = 0; t < steps; ++t)
   {
-    for (int m = 0; m < candidates.size(); ++m)
+    for (unsigned int m = 0; m < candidates.size(); ++m)
     {
       double summation = epsilonCorrected;
-      for (int n = 0; n < candidates.size(); ++n)
+      for (unsigned int n = 0; n < candidates.size(); ++n)
       {
         summation += adj[n][m]*probabilities[n]*epsilonComp;
       }
@@ -245,7 +245,7 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   }
   vector<std::pair<WebPage*, double> > prVector;
   std::set<WebPage*>::iterator fit = candidates.begin();
-  for (int a = 0; a < candidates.size(); ++a)
+  for (unsigned int a = 0; a < candidates.size(); ++a)
   {
     prVector.push_back(std::make_pair(*fit, probabilities[a]));
     ++fit;
