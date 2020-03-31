@@ -1,5 +1,4 @@
 #include <vector>
-#include <iostream>
 
 /**
  * Performs mergesort on the provided vector using

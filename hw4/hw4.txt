@@ -11,7 +11,7 @@ Therefore, there are log[base 2]n divisions
 Therefore, there are log[base 2]n 2s being multiplied in T(n) = 2(2(2...))
 Therefore, T(n) = 2^(log[base 2]n) = n
 T(n) = n
-
+-------------------------------------------------------------------------------
 Part 2
 T(m) = runtime of rf2(...)
 Given that the swap function operates in constant time,
@@ -20,14 +20,15 @@ T(m) = C + T(m-1) = C + C + T(m-2)
 T(m) = (m-1)(C) + T(0)
 T(m) = m(C)
 rf2's runtime is O(m)
-T(n) = T(n-1) + (C+O(n-1)) [runtime of rf2]
-T(n) = T(n-2) + (C+O(n-2)) + (C+O(n-1))
+T(n) = T(n-1) + C + (O(n-1)[runtime of rf2])
+T(n) = T(n-2) + C + (O(n-2)) + C + (O(n-1))
 ...
               0
-T(n) = C(n) + sum (i) = C(n) + (n-1)(n)/2
+T(n) = C*n + sum (i) = C(n) + (n-1)(n)/2
               i=n-1
 T(n) = n^2
-
+---------------------------------------------
+The function call returns {1, 3, 4, 7, 9}:
 Given that data1 = {9, 3, 1, 7, 4},
 the call rf1(data1, 5, 1) will produce
 rf2(data, 4, 1) --> data1 = {3, 9, 1, 7, 4}
@@ -48,4 +49,4 @@ rf2(data+1, 1, 1) --> {1, 3, 4, 7, 9}
 rf2(data+2, 0, 1) --> return {1, 3, 4, 7, 9}
 data += 1*1 --> points at #4
 rf1(data, 2, -1) [list is already sorted, function will continue doing 0 changes]
-The function call returns {1, 3, 4, 7, 9}.
+Thus, the function call returns {1, 3, 4, 7, 9}.

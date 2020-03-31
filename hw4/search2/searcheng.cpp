@@ -189,24 +189,38 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   std::set<WebPage*>::iterator init;
   //count is the size of each candidate's out_links_ set,
   //lets us know the weights in the adjacency matrix
-  double count = 0;
+  vector<double> count;
+  for (int i = 0; i < candidates.size(); i++)
+  {
+    count.push_back(0);
+    init = (*cit)->outgoing_links().begin();
+    for (int j = 0; j < (*cit)->outgoing_links().size(); j++)
+    {
+      if (candidates.find((*init)) != candidates.end())
+      {
+        count[i] = count[i]+1;  //counts every outgoing link in the candidate set
+      }
+      init++; //proceeds to check if next ougoing link is in candidate set
+    }
+    count[i] = count[i]+1;  //for self-loops
+    cit++;  //proceeds to next candidate's count
+  }
   //loops through every candidate as a source & as a target
   //j and k keep track of positions in the probs matrix
   //cit and init keep track of candidate set positions
-  for (int j = 0; j < candidates.size(); j++)
+  cit = candidates.begin();
+  for (int i = 0; i < candidates.size(); i++)
   {
-    //count = (*cit)->outgoing_links().size()+1; //may need to do checking for pre-existent outgoing link to self?
-    count = (*cit)->outgoing_links().size()+1;
     init = candidates.begin();
-    for (int k = 0; k < candidates.size(); ++k)
+    for (int j = 0; j < candidates.size(); ++j)
     {
       if ((*cit)->outgoing_links().find((*init)) != (*cit)->outgoing_links().end())
-        adj[j][k] = 1/count;
+        adj[i][j] = 1/count[i];
       else
-        adj[j][k] = 0;
+        adj[i][j] = 0;
       ++init;
     }
-    //adj[j][j] = 1/count;
+    adj[i][i] = 1/count[i];
     ++cit;
   }
 
@@ -214,16 +228,16 @@ std::vector<std::pair<WebPage*, double> > SearchEng::pageRank(const WebPageSet& 
   std::cout << probabilities[0] << std::endl;
   vector<double> tempProb(candidates.size(), 1.0/candidates.size());
   int steps = 20;
-  double epsilon = .15/candidates.size();
-  double epsilon_c = 1-epsilon;
+  double epsilonCorrected = .15/candidates.size();
+  double epsilonComp = 1-.15;
   for (int t = 0; t < steps; ++t)
   {
     for (int m = 0; m < candidates.size(); ++m)
     {
-      double summation = epsilon;
+      double summation = epsilonCorrected;
       for (int n = 0; n < candidates.size(); ++n)
       {
-        summation += adj[n][m]*probabilities[n]*epsilon_c;
+        summation += adj[n][m]*probabilities[n]*epsilonComp;
       }
       tempProb[m] = summation;
     }
