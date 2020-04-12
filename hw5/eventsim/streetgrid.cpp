@@ -85,6 +85,7 @@ bool StreetGrid::allVehiclesArrived() const
 
 void StreetGrid::monitorState()
 {
+  std::cout << "expected vehicles: " << expectedVehicles_ << " , completed vehicles: " << completed_.size() << std::endl;
     std::cout << "in monitorState" << std::endl;
     std::cout << "State: " << std::endl;
     std::cout << std::setw(4) << " ";
@@ -203,8 +204,8 @@ bool StreetGrid::shouldChooseRow(size_t row, size_t col)
       return true;
     if (col == m-1) //if the vehicle is in the rightmost column, it must go down the column
       return false;
-    int rowTime = max(1, (1+rowGrid[row][col][0]/rowCapacities_[row])*SCALE_FACTOR);
-    int colTime = max(1, (1+colGrid[row][col][0]/colCapacities_[col])*SCALE_FACTOR);
+    int rowTime = max(1, (double)(1+rowGrid[row][col][0]/rowCapacities_[row])*SCALE_FACTOR);
+    int colTime = max(1, (double)(1+colGrid[row][col][0]/colCapacities_[col])*SCALE_FACTOR);
     if (rowTime < colTime)  //traverse this row
       return true;
     else if (rowTime > colTime) //traverse this column
@@ -233,7 +234,7 @@ bool StreetGrid::shouldChooseRow(size_t row, size_t col)
     }
 }
 //returns the max value between two parameters
-int StreetGrid::max(int l, int r)
+double StreetGrid::max(double l, double r)
 {
   if (l > r)
     return l;
@@ -325,15 +326,11 @@ EventList StreetGrid::processArrival(const std::string& vehicleID, const TimeSta
     {
       if (it->second.rowDir)
       {
-        std::cout << "former rowGrid occupancy: " << rowGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
         rowGrid[it->second.rowIndex][it->second.colIndex-1][0] -= 1;
-        std::cout << "deleting former rowGrid occupancy: " << rowGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
       }
       else
       {
-        std::cout << "former colGrid occupancy: " << colGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
         colGrid[it->second.rowIndex-1][it->second.colIndex][0] -= 1;
-        std::cout << "deleting former colGrid occupancy: " << colGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
       }
       completed_.push_back(it->second);
       vehicles_.erase(it);
@@ -345,20 +342,16 @@ EventList StreetGrid::processArrival(const std::string& vehicleID, const TimeSta
         std::cout << "traversing across row" << std::endl;
         if (it->second.rowDir)
         {
-          std::cout << "former rowGrid occupancy: " << rowGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
           rowGrid[it->second.rowIndex][it->second.colIndex-1][0] -= 1;
-          std::cout << "deleting former rowGrid occupancy: " << rowGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
         }
         else
         {
-          std::cout << "former colGrid occupancy: " << colGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
           colGrid[it->second.rowIndex-1][it->second.colIndex][0] -= 1;
-          std::cout << "deleting former colGrid occupancy: " << colGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
         }
+        it->second.end += max(1, (double)(1+rowGrid[it->second.rowIndex][it->second.colIndex][0])/rowCapacities_[it->second.rowIndex])*SCALE_FACTOR;
         rowGrid[it->second.rowIndex][it->second.colIndex][0] += 1;
         it->second.colIndex += 1;
         it->second.rowDir = true;
-        it->second.end += max(1, (1+rowGrid[it->second.rowIndex][it->second.colIndex][0]/rowCapacities_[it->second.rowIndex])*SCALE_FACTOR);
         consequences.push_back(new ArrivalEvent(it->second.end, *this, vehicleID));
       }
       else
@@ -366,25 +359,20 @@ EventList StreetGrid::processArrival(const std::string& vehicleID, const TimeSta
         std::cout << "traversing down column" << std::endl;
         if (it->second.rowDir)
         {
-          std::cout << "former rowGrid occupancy: " << rowGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
           rowGrid[it->second.rowIndex][it->second.colIndex-1][0] -= 1;
-          std::cout << "deleting rowGrid former occupancy: " << rowGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
         }
         else
         {
-          std::cout << "former colGrid occupancy: " << colGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
           colGrid[it->second.rowIndex-1][it->second.colIndex][0] -= 1;
-          std::cout << "deleting former occupancy: " << colGrid[it->second.rowIndex][it->second.colIndex][0] << std::endl;
         }
+        it->second.end += max(1, (double)(1+colGrid[it->second.rowIndex][it->second.colIndex][0])/colCapacities_[it->second.colIndex])*SCALE_FACTOR;
         colGrid[it->second.rowIndex][it->second.colIndex][0] += 1;
         it->second.rowIndex += 1;
         it->second.rowDir = false;
-        it->second.end += max(1, (1+colGrid[it->second.rowIndex][it->second.colIndex][0]/colCapacities_[it->second.colIndex])*SCALE_FACTOR);
         consequences.push_back(new ArrivalEvent(it->second.end, *this, vehicleID));
       }
     }
 
-    monitorState();
     return consequences;
 }
 
@@ -408,7 +396,6 @@ EventList StreetGrid::addVehicle(const Vehicle& v)
     std::map<std::string, Vehicle>::iterator it = vehicles_.find(v.id);
     if (it != vehicles_.end())
       throw std::logic_error("Vehicle with this ID has already been added");
-    expectedVehicles_ += 1;
     vehicles_.insert(std::make_pair(v.id, v));
     it = vehicles_.find(v.id);
 
@@ -423,7 +410,7 @@ EventList StreetGrid::addVehicle(const Vehicle& v)
       if (shouldChooseRow(v.rowIndex, v.colIndex))
       {
         std::cout << "traversing across row" << std::endl;
-        it->second.end = it->second.start + max(1, (1+rowGrid[v.rowIndex][v.colIndex][0]/rowCapacities_[v.rowIndex])*SCALE_FACTOR);
+        it->second.end = it->second.start + max(1, (double)(1+rowGrid[v.rowIndex][v.colIndex][0])/rowCapacities_[v.rowIndex])*SCALE_FACTOR;
         rowGrid[v.rowIndex][v.colIndex][0] += 1;
         it->second.colIndex = v.colIndex + 1;
         it->second.rowDir = true;
@@ -431,7 +418,7 @@ EventList StreetGrid::addVehicle(const Vehicle& v)
       else
       {
         std::cout << "traversing down col" << std::endl;
-        it->second.end = it->second.start + max(1, (1+colGrid[v.rowIndex][v.colIndex][0]/colCapacities_[v.colIndex])*SCALE_FACTOR);
+        it->second.end = it->second.start + max(1, (double)(1+colGrid[v.rowIndex][v.colIndex][0])/colCapacities_[v.colIndex])*SCALE_FACTOR;
         colGrid[v.rowIndex][v.colIndex][0] += 1;
         it->second.rowIndex = v.rowIndex + 1;
         it->second.rowDir = false;

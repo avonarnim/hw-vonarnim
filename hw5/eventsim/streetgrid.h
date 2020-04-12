@@ -150,7 +150,7 @@ private:
 
     /**** YOU MAY ADD PRIVATE HELPER FUNCTIONS HERE *****/
 
-    int max(int l, int r);
+    double max(double l, double r);
 
 
     /**** REQUIRED DATA MEMBER -- DO NOT CHANGE ****/
