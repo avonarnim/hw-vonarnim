@@ -18,7 +18,7 @@ void exprPrinter(std::ostream& ostr, Node* n)
   if (n->children.size() != 0)
   {
     ostr << "( ";
-    for (int i = 0; i < n->children.size()-1; i++)
+    for (unsigned int i = 0; i < n->children.size()-1; i++)
     {
       exprPrinter(ostr, n->children[i]);
       ostr << n->val << " ";
@@ -40,7 +40,7 @@ int exprSolver(Node* n)
         throw std::logic_error("Can't solve a NULL expression");
     }
     vector<int> additors;
-    for (int i = 0; i < n->children.size(); i++)
+    for (unsigned int i = 0; i < n->children.size(); i++)
     {
       additors.push_back(exprSolver(n->children[i]));
     }
@@ -49,7 +49,7 @@ int exprSolver(Node* n)
     else
     {
       int retVal = additors[0];
-      for (int i = 1; i < additors.size(); i++)
+      for (unsigned int i = 1; i < additors.size(); i++)
       {
         if (n->val == "+")
           retVal = retVal + additors[i];
@@ -81,7 +81,7 @@ bool exprIsValid(Node* n)
       return false;
   }
   bool answers = true;
-  for (int i = 0; i < n->children.size(); i++)
+  for (unsigned int i = 0; i < n->children.size(); i++)
   {
     if (!exprIsValid(n->children[i]))
       answers = false;
