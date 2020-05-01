@@ -282,7 +282,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
       }
     }
   }
-
 }
 /*
  * Recall: The writeup specifies that if a node has 2 children you
@@ -313,8 +312,15 @@ void AVLTree<Key, Value>::removeBST(const Key& key)
     if (p != NULL)
     {
       if (isLeftChild(searchFor, p))
+      {
         diff = 1;
-      else { diff = -1; }
+        p->setLeft(NULL);
+      }
+      else
+      {
+        diff = -1;
+        p->setRight(NULL);
+      }
     }
     delete searchFor;
     removeFix(p, diff);

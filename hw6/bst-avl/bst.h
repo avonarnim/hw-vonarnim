@@ -666,6 +666,12 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key, Value>* passing)
     return;
   if (passing->getLeft() == NULL && passing->getRight() == NULL)
   {
+    if (passing->getParent() != NULL){
+      if (passing->getParent()->getRight() == passing)
+      { passing->getParent()->setRight(NULL); }
+      else
+      { passing->getParent()->setLeft(NULL); }
+    }
     delete passing;
     return;
   }
@@ -673,13 +679,17 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key, Value>* passing)
   {
     clearHelper(passing->getLeft());
     clearHelper(passing->getRight());
-    //i think the below code is nonessential. if it is essential, it may also be essential for the above if code block
-    /*Node<Key, Value>* parent = passing->getParent();
-    if (parent->getLeft() == passing)
-      passing->getParent()->setLeft() = NULL;
-    else if (parent->getRight() == passing)
-      parent->setRight() == NULL;*/
+
+    if (passing->getParent() != NULL)
+    {
+      if (passing->getParent()->getLeft() == passing)
+        passing->getParent()->getParent()->setLeft(NULL);
+      else if (passing->getParent()->getRight() == passing)
+        passing->getParent()->setRight(NULL);
+    }
+
     delete passing;
+    return;
   }
 }
 
