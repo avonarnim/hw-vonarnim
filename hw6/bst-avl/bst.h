@@ -452,6 +452,8 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
     }
 
     Node<Key, Value>* insertion = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, NULL);
+    insertion->setRight(NULL);
+    insertion->setLeft(NULL);
     Node<Key, Value>* temp = root_;
     while (temp != NULL)
     {
@@ -489,6 +491,9 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     Node<Key, Value>* rmNode = internalFind(key);
+    if (rmNode == NULL)
+      return;
+
     Node<Key, Value>* rmParent;
     //if rmNode is a leaf node
     if (rmNode->getLeft() == NULL && rmNode->getRight() == NULL)
@@ -504,54 +509,48 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
           rmNode->getParent()->setLeft(NULL);
         }
       }
+      else
+      {
+        root_ = NULL;
+      }
       delete rmNode;
       return;
     }
 
     //if there are two children
     if (rmNode->getLeft() != NULL && rmNode->getRight() != NULL)
-      {
+      { //swap with predecessor
         nodeSwap(rmNode, predecessor(rmNode));
+        //get its parent
         rmParent = rmNode->getParent();
+        //
         if (rmParent == NULL)
         {
           if (root_->getRight() == rmNode)
             root_->setRight(rmNode->getRight());  //you really need to rethink this all - esp the right side of the tree
         }
         if (rmParent->getRight() == rmNode)
-          rmParent->setRight(rmNode->getLeft()); //makes sense based on the nature of the predecessor
+          rmParent->setRight(rmNode->getLeft()); //only has a left node
         else if (rmParent->getLeft() == rmNode)
-          rmParent->setRight(rmNode->getLeft());
+          rmParent->setLeft(rmNode->getLeft()); //only has a left node
         delete rmNode;
         return;
       }
-    else
+    else  //node to be removed has 1 child
       {
         rmParent = rmNode->getParent();
-        //what if rmParent is null?
-        if (rmParent == NULL)
+
+        if (rmParent == NULL)   //if rmNode is the root
         {
-          if (root_->getRight() == rmNode)
+          if (rmNode->getLeft() == NULL)  //going to set root to rmNode->getRIght()
           {
-            if (rmNode->getLeft() == NULL)
-            {
-              root_->setRight(rmNode->getRight());
-            }
-            else
-            {
-              root_->setRight(rmNode->getLeft());
-            }
+            root_ = rmNode->getRight();
+            root_->setParent(NULL);
           }
-          else
+          else if (rmNode->getRight() == NULL)  //going to set root to rmNode->getLeft
           {
-            if (rmNode->getLeft() == NULL)
-            {
-              root_->setLeft(rmNode->getRight());
-            }
-            else
-            {
-              root_->setLeft(rmNode->getLeft());
-            }
+            root_ = rmNode->getLeft();
+            root_->setParent(NULL);
           }
         }
         else if (rmParent->getRight() == rmNode)
@@ -565,7 +564,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
             rmParent->setRight(rmNode->getLeft());
           }
         }
-        else
+        else  //rmParent->getLeft() == rmNode
         {
           if (rmNode->getLeft() == NULL)
           {
@@ -637,7 +636,14 @@ BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current)
       return NULL;
     else
     {
-      return temp;
+      if (temp->getParent() == NULL && current == temp->getRight())
+      {
+        return NULL;  //returns null if temp == root & you're traversing from the right side
+      }
+      else
+      {
+        return temp;
+      }
     }
   }
 }

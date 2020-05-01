@@ -331,10 +331,12 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n,  char diff)
   AVLNode<Key, Value>* p = n->getParent();
   int ndiff;
   if (p != NULL)
+  {
     if (isLeftChild(n, p))
       ndiff = 1;
     else
       { ndiff = -1; }
+  }
   AVLNode<Key, Value>* c = NULL;
   if (diff == -1)
   {
