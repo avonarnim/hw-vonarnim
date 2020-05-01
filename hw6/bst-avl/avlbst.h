@@ -189,7 +189,7 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     { insertion->getParent()->setLeft(insertion); }
 
   AVLNode<Key, Value>* helpPointer = insertion->getParent();
-  if (helpPointer->getBalance() == -1) //needs type avlnode
+  if (helpPointer->getBalance() == -1)
     { helpPointer->setBalance(0); }
   else if (helpPointer->getBalance() == 1)
     { helpPointer->setBalance(0); }
@@ -209,7 +209,7 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
 template<class Key, class Value>
 void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, Value>* node)
 {
-  if (parent == NULL || parent->getParent() == parent)  //evaluate the properness of this.
+  if (parent == NULL || parent->getParent() == NULL)  //evaluate the properness of this.
     return;
   AVLNode<Key, Value>* grand = parent->getParent();
   if (isLeftChild(parent, grand))
