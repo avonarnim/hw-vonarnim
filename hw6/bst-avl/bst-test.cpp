@@ -5,14 +5,13 @@
 
 using namespace std;
 
-
 int main(int argc, char *argv[])
 {
     // Binary Search Tree tests
     BinarySearchTree<char,int> bt;
     bt.insert(std::make_pair('a',1));
     bt.insert(std::make_pair('b',2));
-    
+
     cout << "Binary Search Tree contents:" << endl;
     for(AVLTree<char,int>::iterator it = bt.begin(); it != bt.end(); ++it) {
         cout << it->first << " " << it->second << endl;
