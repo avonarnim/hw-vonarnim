@@ -167,8 +167,7 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     duplicate->getValue() = new_item.second;
     return;
   }
-  Node<Key, Value>* getRoot = BinarySearchTree<Key, Value>::root_; //returns node type
-  AVLNode<Key, Value>* temp = new AVLNode<Key, Value>(getRoot->getKey(), getRoot->getValue(), NULL);
+  Node<Key, Value>* temp = BinarySearchTree<Key, Value>::root_; //returns node type
   AVLNode<Key, Value>* insertion = new AVLNode<Key, Value>(new_item.first, new_item.second, NULL);
   while (temp != NULL)
   {
@@ -178,8 +177,6 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     else if (temp->getKey() < new_item.first)
     { temp = temp->getRight(); }
   }
-
-  delete temp;
 
   if (insertion->getParent() == NULL)
   {
