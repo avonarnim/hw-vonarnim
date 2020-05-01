@@ -451,8 +451,8 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
       return;
     }
 
-    Node<Key, Value>* temp = root_;
     Node<Key, Value>* insertion = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, NULL);
+    Node<Key, Value>* temp = root_;
     while (temp != NULL)
     {
       insertion->setParent(temp);
@@ -465,7 +465,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
         temp = temp->getRight();
       }
     }
-    if (insertion == NULL)
+    if (insertion->getParent() == NULL)
     {
       root_ = insertion;
     }
