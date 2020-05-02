@@ -249,7 +249,7 @@ protected:
     virtual void nodeSwap( Node<Key,Value>* n1, Node<Key,Value>* n2) ;
 
     // Add helper functions here
-    bool areSubsBalanced(Node<Key, Value>* head);
+    bool areSubsBalanced(Node<Key, Value>* head) const;
     int subTreeHeight(Node<Key, Value>* current, int depth);
     void clearHelper(Node<Key, Value>* passing);
 
@@ -740,7 +740,7 @@ bool BinarySearchTree<Key, Value>::isBalanced() const
 
 //helper function to decide if left and right subtrees are balanced
 template<typename Key, typename Value>
-bool BinarySearchTree<Key, Value>::areSubsBalanced(Node<Key, Value>* head)
+bool BinarySearchTree<Key, Value>::areSubsBalanced(Node<Key, Value>* head) const
 {
   if (head == NULL)
     return true;
