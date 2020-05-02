@@ -209,6 +209,7 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
 template<class Key, class Value>
 void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, Value>* node)
 {
+  this->printRoot(BinarySearchTree<Key, Value>::root_);
   if (parent == NULL || parent->getParent() == NULL)  //evaluate the properness of this.
     return;
   AVLNode<Key, Value>* grand = parent->getParent();
@@ -246,6 +247,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
+    this->printRoot(BinarySearchTree<Key, Value>::root_);
   }
   else
   {
@@ -281,6 +283,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
+    this->printRoot(BinarySearchTree<Key, Value>::root_);
   }
 }
 /*

@@ -702,6 +702,8 @@ Node<Key, Value>*
 BinarySearchTree<Key, Value>::getSmallestNode() const
 {
     Node<Key, Value>* searching = root_;
+    if (searching == NULL)
+      return searching;
     while (searching->getLeft() != NULL)
     {
       searching = searching->getLeft();
