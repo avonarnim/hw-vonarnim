@@ -53,9 +53,8 @@ int main(int argc, char *argv[])
         cout << "k done" << endl;
     at.insert(std::make_pair('z',2));
         cout << "z done" << endl;
-    //at.insert(std::make_pair('m',2));
-      //  cout << "m done" << endl;
-
+    at.insert(std::make_pair('m',2));
+        cout << "m done" << endl;
 
     cout << "\nAVLTree contents:" << endl;
     for(AVLTree<char,int>::iterator it = at.begin(); it != at.end(); ++it) {
