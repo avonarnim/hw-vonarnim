@@ -479,6 +479,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
       {
         insertion->getParent()->setLeft(insertion);
       }
+      this->printRoot(root_);
 }
 
 
@@ -514,6 +515,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         root_ = NULL;
       }
       delete rmNode;
+      this->printRoot(BinarySearchTree<Key,Value>::root_);
       return;
     }
 
@@ -534,6 +536,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         else if (rmParent->getLeft() == rmNode)
           rmParent->setLeft(rmNode->getLeft()); //only has a left node
         delete rmNode;
+        this->printRoot(BinarySearchTree<Key,Value>::root_);
         return;
       }
     else  //node to be removed has 1 child
@@ -576,6 +579,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
           }
         }
         delete rmNode;
+        this->printRoot(BinarySearchTree<Key,Value>::root_);
         return;
       }
 }
