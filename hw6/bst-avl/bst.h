@@ -753,7 +753,7 @@ bool BinarySearchTree<Key, Value>::areSubsBalanced(Node<Key, Value>* head) const
 
 
 template<typename Key, typename Value>
-int subTreeHeight(Node<Key, Value> * current, int depth)
+int BinarySearchTree<Key, Value>::subTreeHeight(Node<Key, Value> * current, int depth)
 {
     if(current == nullptr)
     {
