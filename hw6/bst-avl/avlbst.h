@@ -167,8 +167,12 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     duplicate->getValue() = new_item.second;
     return;
   }
-  Node<Key, Value>* temp = BinarySearchTree<Key, Value>::root_; //returns node type
+
   AVLNode<Key, Value>* insertion = new AVLNode<Key, Value>(new_item.first, new_item.second, NULL);
+  insertion->setRight(NULL);
+  insertion->setLeft(NULL);
+
+  Node<Key, Value>* temp = BinarySearchTree<Key, Value>::root_; //returns node type
   while (temp != NULL)
   {
     insertion->setParent(temp);
@@ -209,7 +213,7 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
 template<class Key, class Value>
 void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, Value>* node)
 {
-  this->printRoot(BinarySearchTree<Key, Value>::root_);
+  BinarySearchTree<Key, Value>::print();
   if (parent == NULL || parent->getParent() == NULL)  //evaluate the properness of this.
     return;
   AVLNode<Key, Value>* grand = parent->getParent();
@@ -247,7 +251,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
-    this->printRoot(BinarySearchTree<Key, Value>::root_);
+    BinarySearchTree<Key, Value>::print();
   }
   else
   {
@@ -283,7 +287,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
-    this->printRoot(BinarySearchTree<Key, Value>::root_);
+    BinarySearchTree<Key, Value>::print();
   }
 }
 /*
@@ -470,6 +474,22 @@ void AVLTree<Key, Value>::rotateRight( AVLNode<Key, Value>* n)
 {
   //make this node the right child of the former left child
   Node<Key, Value>* temp = n->getLeft()->getRight();
+  Node<Key, Value>* parent = n->getParent();
+  if (parent == NULL)
+  {
+    BinarySearchTree<Key, Value>::root_ = n->getLeft();
+  }
+  else
+  {
+    if (isLeftChild(n, (AVLNode<Key, Value>*) parent))
+    {
+      parent->setLeft(n->getLeft());
+    }
+    else
+    {
+      parent->setRight(n->getLeft());
+    }
+  }
   n->getLeft()->setRight(n);
   n->setLeft(temp);
 }
@@ -479,6 +499,22 @@ void AVLTree<Key, Value>::rotateLeft( AVLNode<Key, Value>* n)
 {
   //make this node the left child of the former right child
   Node<Key, Value>* temp = n->getRight()->getLeft();
+  Node<Key, Value>* parent = n->getParent();
+  if (parent == NULL)
+  { //node was root_
+    BinarySearchTree<Key, Value>::root_ = n->getRight();
+  }
+  else
+  {
+    if (isLeftChild(n, (AVLNode<Key, Value>*) parent))
+    {
+      parent->setLeft(n->getRight());
+    }
+    else
+    {
+      parent->setRight(n->getRight());
+    }
+  }
   n->getRight()->setLeft(n);
   n->setRight(temp);
 }

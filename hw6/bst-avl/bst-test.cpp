@@ -10,8 +10,11 @@ int main(int argc, char *argv[])
 {
     // Binary Search Tree tests
     BinarySearchTree<char,int> bt;
+    bt.insert(std::make_pair('d',2));
     bt.insert(std::make_pair('b',2));
-
+    bt.insert(std::make_pair('a',2));
+    bt.insert(std::make_pair('g',2));
+    bt.insert(std::make_pair('f',2));
 
     cout << "Binary Search Tree contents:" << endl;
     for(AVLTree<char,int>::iterator it = bt.begin(); it != bt.end(); ++it) {
@@ -36,16 +39,23 @@ int main(int argc, char *argv[])
         cout << it->first << " " << it->second << endl;
     }
 
+
     // AVL Tree Tests
+    std::cout << "avl tree tests" << std::endl;
     AVLTree<char,int> at;
     at.insert(std::make_pair('a',1));
-    cout << "a done" << endl;
+      cout << "a done" << endl;
     at.insert(std::make_pair('b',2));
-    cout << "b done" << endl;
-    at.insert(std::make_pair('c',3));
-    cout << "c done" << endl;
+      cout << "b done" << endl;
     at.insert(std::make_pair('d',4));
-    cout << "d done" << endl;
+      cout << "d done" << endl;
+      at.insert(std::make_pair('k',6));
+        cout << "k done" << endl;
+    at.insert(std::make_pair('z',2));
+        cout << "z done" << endl;
+    //at.insert(std::make_pair('m',2));
+      //  cout << "m done" << endl;
+
 
     cout << "\nAVLTree contents:" << endl;
     for(AVLTree<char,int>::iterator it = at.begin(); it != at.end(); ++it) {

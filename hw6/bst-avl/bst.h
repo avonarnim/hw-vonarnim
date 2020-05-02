@@ -454,6 +454,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
     Node<Key, Value>* insertion = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, NULL);
     insertion->setRight(NULL);
     insertion->setLeft(NULL);
+
     Node<Key, Value>* temp = root_;
     while (temp != NULL)
     {
@@ -467,6 +468,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
         temp = temp->getRight();
       }
     }
+
     if (insertion->getParent() == NULL)
     {
       root_ = insertion;
@@ -479,7 +481,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
       {
         insertion->getParent()->setLeft(insertion);
       }
-      this->printRoot(root_);
+    print();
 }
 
 
@@ -515,7 +517,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         root_ = NULL;
       }
       delete rmNode;
-      this->printRoot(BinarySearchTree<Key,Value>::root_);
+      print();
       return;
     }
 
@@ -536,7 +538,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         else if (rmParent->getLeft() == rmNode)
           rmParent->setLeft(rmNode->getLeft()); //only has a left node
         delete rmNode;
-        this->printRoot(BinarySearchTree<Key,Value>::root_);
+        print();
         return;
       }
     else  //node to be removed has 1 child
@@ -561,10 +563,12 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
           if (rmNode->getLeft() == NULL)
           {
             rmParent->setRight(rmNode->getRight());
+            rmNode->getRight()->setRight(rmParent);
           }
           else
           {
             rmParent->setRight(rmNode->getLeft());
+            rmNode->getLeft()->setParent(rmParent);
           }
         }
         else  //rmParent->getLeft() == rmNode
@@ -572,14 +576,16 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
           if (rmNode->getLeft() == NULL)
           {
             rmParent->setLeft(rmNode->getRight());
+            rmNode->getRight()->setParent(rmParent);
           }
           else
           {
             rmParent->setLeft(rmNode->getLeft());
+            rmNode->getLeft()->setParent(rmParent);
           }
         }
         delete rmNode;
-        this->printRoot(BinarySearchTree<Key,Value>::root_);
+        print();
         return;
       }
 }
@@ -631,7 +637,7 @@ BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current)
   else
   {
     temp = current->getParent();
-    while (current != temp->getLeft() && temp->getParent() != NULL)
+    while (temp != NULL && current != temp->getLeft() && temp->getParent() != NULL)
     {
       current = temp;
       temp = current->getParent();

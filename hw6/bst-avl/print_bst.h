@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <cstdint>
+#include <iostream>
 
 #ifndef PRINT_BST_H
 #define PRINT_BST_H
@@ -130,15 +131,20 @@ void BinarySearchTree<Key, Value>::printRoot (Node<Key, Value>* root) const
     std::map<Key, uint8_t> valuePlaceholders;
 
     uint8_t nextPlaceHolderVal = 1;
+    std::cout << "start inserting into valuePlaceholders" << nextPlaceHolderVal << std::endl;
     for(typename BinarySearchTree<Key, Value>::iterator treeIter = this->begin(); treeIter != this->end(); ++treeIter)
     {
 
         if(getNodeDepth(*this, root, treeIter.current_) != -1)
         {
+          std::cout << "in if statement" << std::endl;
             // note; the iterator will traverse in sorted order so values should get the same placeholders between
             // different calls as long as the tree is the same
             valuePlaceholders.insert(std::make_pair(treeIter->first, nextPlaceHolderVal++));
+            std::cout << treeIter->first << treeIter->second << std::endl;
+            std::cout << nextPlaceHolderVal << std::endl;
         }
+        std::cout << "in for loop?" << std::endl;
 
     }
 
