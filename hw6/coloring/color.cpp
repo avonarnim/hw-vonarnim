@@ -21,22 +21,17 @@ int main(int argc, char* argv[])
         return 1;
     }
     // COMPLETE main()
-    ifstream in_file(argv[2]);
-    ofstream out_file(argv[3]);
-
-    std::cout << "files opened" << std::endl;
+    ifstream in_file(argv[1]);
+    ofstream out_file(argv[2]);
 
     int numCountries, rows, cols;
     string holdVals;
-    char holdNextLineChar;
     std::set<char> countryList;
     std::map<char, std::set<char>> connections; //used for tracking countries to which a contry is connected
 
     std::getline(in_file, holdVals);
     std::stringstream ss(holdVals);
     ss >> numCountries >> rows >> cols;
-    std::cout << "variables initialized" << std::endl;
-    std::cout << numCountries << rows << cols << std::endl;
 
     //this size will allow easy comparisons between upper/lower/left/right grids
     char** cMap = new char*[rows+2];
@@ -52,23 +47,13 @@ int main(int argc, char* argv[])
         in_file >> cMap[i][j];
         countryList.insert(cMap[i][j]); //keeps track of all unique chars
       }
-      in_file >> holdNextLineChar;
-    }
-    std::cout << "cMap created" << std::endl;
-
-    for (std::set<char>::iterator it = countryList.begin(); it != countryList.end(); ++it)
-    {
-      std::cout << "printing countryList" << std::endl;
-      std::cout << *it << std::endl;
     }
 
     //assigning outer edges of chars in the map to null equivalent
-    std::cout << "filling cMap" << std::endl;
+    //filling cMap
     for (int i = 0; i < cols+2; i++)
       {
-        std::cout << "here" << std::endl;
         cMap[0][i] = '\0';
-        std::cout << "here" << std::endl;
         cMap[rows+1][i] = '\0';
       }
     for (int  i = 0; i < rows+2; i++)
@@ -76,7 +61,7 @@ int main(int argc, char* argv[])
       cMap[i][0] = '\0';
       cMap[i][cols+1] = '\0';
     }
-    std::cout << "printing cMap" << std::endl;
+    //prints cMap
     for (int i = 0; i < rows+2; i++)
     {
       for (int j = 0; j < cols+2; j++)
@@ -94,12 +79,14 @@ int main(int argc, char* argv[])
       coloring.insert(std::make_pair(*countryIt, 0));
     }
     std::cout << "filled coloring, countryIt" << std::endl;
+
     //make connections
-    for (int i = 1; i < rows+2; i++)
+    for (int i = 1; i < rows+1; i++)
     {
-      for (int j = 1; j < cols+2; j++)
+      for (int j = 1; j < cols+1; j++)
       {
         char current = cMap[i][j];
+        std::cout << current;
         if (current != cMap[i][j-1] && cMap[i][j-1] != '\0')
           connections[current].insert(cMap[i][j-1]);
         if (current != cMap[i][j+1] && cMap[i][j+1] != '\0')
@@ -109,6 +96,7 @@ int main(int argc, char* argv[])
         if (current != cMap[i+1][j] && cMap[i+1][j] != '\0')
           connections[current].insert(cMap[i+1][j]);
       }
+      std::cout << std::endl;
     }
     std::cout << "printing all nodes in connections" << std::endl;
     for (std::map<char, std::set<char>>::iterator it = connections.begin(); it != connections.end(); ++it)
