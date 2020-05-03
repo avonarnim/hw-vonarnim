@@ -167,9 +167,12 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     duplicate->getValue() = new_item.second;
     return;
   }
-  Node<Key, Value>* getRoot = BinarySearchTree<Key, Value>::root_; //returns node type
-  AVLNode<Key, Value>* temp = new AVLNode<Key, Value>(getRoot->getKey(), getRoot->getValue(), NULL);
+  std::cout << "inserting " << new_item.first << std::endl;
   AVLNode<Key, Value>* insertion = new AVLNode<Key, Value>(new_item.first, new_item.second, NULL);
+  insertion->setRight(NULL);
+  insertion->setLeft(NULL);
+
+  Node<Key, Value>* temp = BinarySearchTree<Key, Value>::root_; //returns node type
   while (temp != NULL)
   {
     insertion->setParent(temp);
@@ -178,8 +181,6 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     else if (temp->getKey() < new_item.first)
     { temp = temp->getRight(); }
   }
-
-  delete temp;
 
   if (insertion->getParent() == NULL)
   {
@@ -192,7 +193,7 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     { insertion->getParent()->setLeft(insertion); }
 
   AVLNode<Key, Value>* helpPointer = insertion->getParent();
-  if (helpPointer->getBalance() == -1) //needs type avlnode
+  if (helpPointer->getBalance() == -1)
     { helpPointer->setBalance(0); }
   else if (helpPointer->getBalance() == 1)
     { helpPointer->setBalance(0); }
@@ -212,7 +213,9 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
 template<class Key, class Value>
 void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, Value>* node)
 {
-  if (parent == NULL || parent->getParent() == parent)  //evaluate the properness of this.
+  std::cout << "in insertFix" << std::endl;
+  BinarySearchTree<Key, Value>::print();
+  if (parent == NULL || parent->getParent() == NULL)  //evaluate the properness of this.
     return;
   AVLNode<Key, Value>* grand = parent->getParent();
   if (isLeftChild(parent, grand))
@@ -222,18 +225,24 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
       return;
     else if (grand->getBalance() == -1)
       {
+        std::cout << "fixing grandparent" << std::endl;
+        BinarySearchTree<Key, Value>::print();
         insertFix(grand, parent);
       }
     else if (grand->getBalance() == -2)
     {
       if (isLeftChild(node, parent))
       {
+        std::cout << "before rotating right" << std::endl;
+        BinarySearchTree<Key, Value>::print();
         rotateRight(grand);
         parent->setBalance(0);
         grand->setBalance(0);
       }
       else
       {
+        std::cout << "before rotating left, then right" << std::endl;
+        BinarySearchTree<Key, Value>::print();
         rotateLeft(parent);
         rotateRight(grand);
         if (node->getBalance() == -1)
@@ -249,6 +258,8 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
+    std::cout << "done with insertFix" << std::endl;
+    BinarySearchTree<Key, Value>::print();
   }
   else
   {
@@ -257,18 +268,24 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
       return;
     else if (grand->getBalance() == 1)
       {
+        std::cout << "before fixing grandparent" << std::endl;
+        BinarySearchTree<Key, Value>::print();
         insertFix(grand, parent);
       }
     else if (grand->getBalance() == 2)
     {
       if (isRightChild(node, parent))
       {
+        std::cout << "before rotating left" << std::endl;
+        BinarySearchTree<Key, Value>::print();
         rotateLeft(grand);
         parent->setBalance(0);
         grand->setBalance(0);
       }
       else
       {
+        std::cout << "before rotating right then left" << std::endl;
+        BinarySearchTree<Key, Value>::print();
         rotateRight(parent);
         rotateLeft(grand);
         if (node->getBalance() == 1)
@@ -284,8 +301,9 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
+    std::cout << "done with insert fix" << std::endl;
+    BinarySearchTree<Key, Value>::print();
   }
-
 }
 /*
  * Recall: The writeup specifies that if a node has 2 children you
@@ -316,8 +334,15 @@ void AVLTree<Key, Value>::removeBST(const Key& key)
     if (p != NULL)
     {
       if (isLeftChild(searchFor, p))
+      {
         diff = 1;
-      else { diff = -1; }
+        p->setLeft(NULL);
+      }
+      else
+      {
+        diff = -1;
+        p->setRight(NULL);
+      }
     }
     delete searchFor;
     removeFix(p, diff);
@@ -331,10 +356,12 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n,  char diff)
   AVLNode<Key, Value>* p = n->getParent();
   int ndiff;
   if (p != NULL)
+  {
     if (isLeftChild(n, p))
       ndiff = 1;
     else
-      ndiff = -1;
+      { ndiff = -1; }
+  }
   AVLNode<Key, Value>* c = NULL;
   if (diff == -1)
   {
@@ -462,7 +489,25 @@ void AVLTree<Key, Value>::rotateRight( AVLNode<Key, Value>* n)
 {
   //make this node the right child of the former left child
   Node<Key, Value>* temp = n->getLeft()->getRight();
+  Node<Key, Value>* parent = n->getParent();
+  if (parent == NULL)
+  {
+    BinarySearchTree<Key, Value>::root_ = n->getLeft();
+  }
+  else
+  {
+    if (isLeftChild(n, (AVLNode<Key, Value>*) parent))
+    {
+      parent->setLeft(n->getLeft());
+    }
+    else
+    {
+      parent->setRight(n->getLeft());
+    }
+  }
+  n->getLeft()->setParent(parent);
   n->getLeft()->setRight(n);
+  n->setParent(n->getLeft());
   n->setLeft(temp);
 }
 
@@ -471,7 +516,25 @@ void AVLTree<Key, Value>::rotateLeft( AVLNode<Key, Value>* n)
 {
   //make this node the left child of the former right child
   Node<Key, Value>* temp = n->getRight()->getLeft();
+  Node<Key, Value>* parent = n->getParent();
+  if (parent == NULL)
+  { //node was root_
+    BinarySearchTree<Key, Value>::root_ = n->getRight();
+  }
+  else
+  {
+    if (isLeftChild(n, (AVLNode<Key, Value>*) parent))
+    {
+      parent->setLeft(n->getRight());
+    }
+    else
+    {
+      parent->setRight(n->getRight());
+    }
+  }
+  n->getRight()->setParent(parent);
   n->getRight()->setLeft(n);
+  n->setParent(n->getRight());
   n->setRight(temp);
 }
 

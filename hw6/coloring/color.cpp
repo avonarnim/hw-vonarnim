@@ -8,7 +8,7 @@ using namespace std;
 
 
 typedef AVLTree<char, int> ANSWER_MAP_T;
-void printSolution(ANSWER_MAP_T& answer, std::ostream& ostr);
+void printSolution(ANSWER_MAP_T& answer, std::ostream& os);
 bool determineColoring(std::map<char, std::set<char>>& links, AVLTree<char, int>& coloring, int idx, std::ostream& os);
 bool isValid(std::map<char, std::set<char>>& links, AVLTree<char, int>& coloring, int idx);
 
@@ -43,12 +43,12 @@ int main(int argc, char* argv[])
       in_file >> holdNextLineChar;
     }
     //assigning outer edges of chars in the map to null equivalent
-    for (int i = 0; i < cols; i++)
+    for (int i = 0; i < cols+2; i++)
       {
         cMap[0][i] = '\0';
         cMap[rows+1][i] = '\0';
       }
-    for (int  i = 0; i < rows; i++)
+    for (int  i = 0; i < rows+2; i++)
     {
       cMap[i][0] = '\0';
       cMap[i][cols+1] = '\0';
@@ -62,9 +62,9 @@ int main(int argc, char* argv[])
       coloring.insert(std::make_pair(*countryIt, 0));
     }
     //make connections
-    for (int i = 1; i < rows+1; i++)
+    for (int i = 1; i < rows+2; i++)
     {
-      for (int j = 1; j < cols+1; j++)
+      for (int j = 1; j < cols+2; j++)
       {
         char current = cMap[i][j];
         if (current != cMap[i][j-1] && cMap[i][j-1] != '\0')
@@ -116,7 +116,7 @@ bool isValid(std::map<char, std::set<char>>& links, AVLTree<char, int>& coloring
   { //will check every connection a given country has
     for (std::set<char>::iterator linkConnection = linksIt->second.begin(); linkConnection != linksIt->second.end(); ++linkConnection)
     { //if the country has a connection who is assigned the same color as it, the coloring is not valid
-      if (coloring.find(*linkConnection) == coloring.find(linksIt->first))
+      if (coloring.find(*linkConnection)->second == coloring.find(linksIt->first)->second)
         return false;
     }
     linksIt++;
