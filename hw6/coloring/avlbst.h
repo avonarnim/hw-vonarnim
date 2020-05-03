@@ -167,7 +167,6 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
     duplicate->getValue() = new_item.second;
     return;
   }
-  std::cout << "inserting " << new_item.first << std::endl;
   AVLNode<Key, Value>* insertion = new AVLNode<Key, Value>(new_item.first, new_item.second, NULL);
   insertion->setRight(NULL);
   insertion->setLeft(NULL);
@@ -213,8 +212,6 @@ void AVLTree<Key, Value>::insertBST(const std::pair<const Key, Value> &new_item)
 template<class Key, class Value>
 void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, Value>* node)
 {
-  std::cout << "in insertFix" << std::endl;
-  BinarySearchTree<Key, Value>::print();
   if (parent == NULL || parent->getParent() == NULL)  //evaluate the properness of this.
     return;
   AVLNode<Key, Value>* grand = parent->getParent();
@@ -225,24 +222,18 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
       return;
     else if (grand->getBalance() == -1)
       {
-        std::cout << "fixing grandparent" << std::endl;
-        BinarySearchTree<Key, Value>::print();
         insertFix(grand, parent);
       }
     else if (grand->getBalance() == -2)
     {
       if (isLeftChild(node, parent))
       {
-        std::cout << "before rotating right" << std::endl;
-        BinarySearchTree<Key, Value>::print();
         rotateRight(grand);
         parent->setBalance(0);
         grand->setBalance(0);
       }
       else
       {
-        std::cout << "before rotating left, then right" << std::endl;
-        BinarySearchTree<Key, Value>::print();
         rotateLeft(parent);
         rotateRight(grand);
         if (node->getBalance() == -1)
@@ -258,8 +249,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
-    std::cout << "done with insertFix" << std::endl;
-    BinarySearchTree<Key, Value>::print();
   }
   else
   {
@@ -268,24 +257,18 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
       return;
     else if (grand->getBalance() == 1)
       {
-        std::cout << "before fixing grandparent" << std::endl;
-        BinarySearchTree<Key, Value>::print();
         insertFix(grand, parent);
       }
     else if (grand->getBalance() == 2)
     {
       if (isRightChild(node, parent))
       {
-        std::cout << "before rotating left" << std::endl;
-        BinarySearchTree<Key, Value>::print();
         rotateLeft(grand);
         parent->setBalance(0);
         grand->setBalance(0);
       }
       else
       {
-        std::cout << "before rotating right then left" << std::endl;
-        BinarySearchTree<Key, Value>::print();
         rotateRight(parent);
         rotateLeft(grand);
         if (node->getBalance() == 1)
@@ -301,8 +284,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key, Value>* parent,  AVLNode<Key, V
         }
       }
     }
-    std::cout << "done with insert fix" << std::endl;
-    BinarySearchTree<Key, Value>::print();
   }
 }
 /*

@@ -61,15 +61,6 @@ int main(int argc, char* argv[])
       cMap[i][0] = '\0';
       cMap[i][cols+1] = '\0';
     }
-    //prints cMap
-    for (int i = 0; i < rows+2; i++)
-    {
-      for (int j = 0; j < cols+2; j++)
-      {
-        std::cout << cMap[i][j];
-      }
-      std::cout << std::endl;
-    }
 
     AVLTree<char, int> coloring;
     std::set<char>::iterator countryIt;
@@ -103,18 +94,8 @@ int main(int argc, char* argv[])
           connections[current].insert(cMap[i+1][j]);
         }
       }
-      std::cout << std::endl;
     }
-    std::cout << "printing all nodes in connections" << std::endl;
-    for (std::map<char, std::set<char>>::iterator it = connections.begin(); it != connections.end(); ++it)
-    {
-      std::cout << it->first;
-      for (std::set<char>::iterator sit = it->second.begin(); sit != it->second.end(); ++sit)
-      {
-        std::cout << *sit << " ";
-      }
-      std::cout << std::endl;
-    }
+
     determineColoring(connections, coloring, 0, out_file);
 
     // Call printSolution to output the answers to the output file
@@ -129,30 +110,27 @@ int main(int argc, char* argv[])
 
 bool determineColoring(std::map<char, std::set<char>>& links, AVLTree<char, int>& coloring, int idx, std::ostream& os)
 {
-  std::cout << "in determine coloring" << std::endl;
   if ((unsigned int) idx == links.size())  //if every country has been assigned a color, print the solution
   {
-    std::cout << "going to print solution" << std::endl;
     printSolution(coloring, os);
     return true;
   }
   AVLTree<char, int>::iterator colorIt = coloring.begin();  //used to specify the appropriate country whose color is being modified
   for (int i = 0; i < idx; i++)
     { ++colorIt; }
-  std::cout << "country: " << colorIt->first << std::endl;
   idx++;  //used to indicate that one more node is now under scrutiny during the isValid call
   for (int i = 1; i <= 4; i++) //checks all possible colorings
   {
     colorIt->second = i;  //assign a possible coloring for the country
     if (isValid(links, coloring, idx))  //if the coloring works for now...
     {
-      std::cout << i << " was valid for " << colorIt->first << std::endl;
       if (determineColoring(links, coloring, idx, os))  //see if other colorings will complete the overall coloring
         {
           return true;  //will reach here if we have already gone through printSolution
         }
     }
   }
+  colorIt->second = 0;
   return false;
 }
 
