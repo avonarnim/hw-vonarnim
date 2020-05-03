@@ -625,6 +625,24 @@ Node<Key, Value>*
 BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current)
 {
   if (current == NULL)
+    return NULL;
+  if (current->getRight() != NULL)
+  {
+    Node<Key, Value>* temp = current->getRight();
+    while (temp->getLeft() != NULL)
+    {
+      temp = temp->getLeft();
+    }
+    return temp;
+  }
+  Node<Key, Value>* parent = current->getParent();
+  while (parent != NULL && current == parent->getRight())
+  {
+    current = parent;
+    parent = parent->getParent();
+  }
+  return parent;
+  /*if (current == NULL)
     return NULL;  //throw error?
 
   Node<Key, Value>* temp = current->getRight();
@@ -655,7 +673,7 @@ BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current)
         return temp;
       }
     }
-  }
+  }*/
 }
 
 /**
@@ -676,7 +694,7 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key, Value>* passing)
     return;
   if (passing->getLeft() == NULL && passing->getRight() == NULL)
   {
-    if (passing->getParent() != NULL){
+    if (passing->getParent() != NULL) {
       if (passing->getParent()->getRight() == passing)
       { passing->getParent()->setRight(NULL); }
       else
@@ -693,7 +711,7 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key, Value>* passing)
     if (passing->getParent() != NULL)
     {
       if (passing->getParent()->getLeft() == passing)
-        passing->getParent()->getParent()->setLeft(NULL);
+        passing->getParent()->setLeft(NULL);
       else if (passing->getParent()->getRight() == passing)
         passing->getParent()->setRight(NULL);
     }
