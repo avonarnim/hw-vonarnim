@@ -531,7 +531,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         if (rmParent == NULL)
         {
           if (root_->getRight() == rmNode)
-            root_->setRight(rmNode->getRight());  //you really need to rethink this all - esp the right side of the tree
+            root_->setRight(rmNode->getRight());
         }
         if (rmParent->getRight() == rmNode)
           rmParent->setRight(rmNode->getLeft()); //only has a left node
@@ -642,38 +642,6 @@ BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current)
     parent = parent->getParent();
   }
   return parent;
-  /*if (current == NULL)
-    return NULL;  //throw error?
-
-  Node<Key, Value>* temp = current->getRight();
-  if (temp != NULL)
-  {
-    while (temp->getLeft() != NULL)
-      temp = temp->getLeft();
-    return temp;
-  }
-  else
-  {
-    temp = current->getParent();
-    while (temp != NULL && current != temp->getLeft() && temp->getParent() != NULL)
-    {
-      current = temp;
-      temp = current->getParent();
-    }
-    if (temp == NULL)
-      return NULL;
-    else
-    {
-      if (temp->getParent() == NULL && current == temp->getRight())
-      {
-        return NULL;  //returns null if temp == root & you're traversing from the right side
-      }
-      else
-      {
-        return temp;
-      }
-    }
-  }*/
 }
 
 /**

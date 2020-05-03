@@ -8,7 +8,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  /*
     // Binary Search Tree tests
     BinarySearchTree<char,int> bt;
     bt.insert(std::make_pair('d',2));
@@ -39,8 +38,7 @@ int main(int argc, char *argv[])
     for(AVLTree<char,int>::iterator it = bt.begin(); it != bt.end(); ++it) {
         cout << it->first << " " << it->second << endl;
     }
-*/
-
+    
     // AVL Tree Tests
     std::cout << "avl tree tests" << std::endl;
     AVLTree<char,int> at;
