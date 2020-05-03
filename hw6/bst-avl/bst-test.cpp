@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
       cout << "b done" << endl;
     at.insert(std::make_pair('d',4));
       cout << "d done" << endl;
-      at.insert(std::make_pair('k',6));
-        cout << "k done" << endl;
+    at.insert(std::make_pair('k',6));
+      cout << "k done" << endl;
     at.insert(std::make_pair('z',2));
         cout << "z done" << endl;
     at.insert(std::make_pair('m',2));

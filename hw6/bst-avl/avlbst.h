@@ -505,6 +505,7 @@ void AVLTree<Key, Value>::rotateRight( AVLNode<Key, Value>* n)
       parent->setRight(n->getLeft());
     }
   }
+  n->getLeft()->setParent(parent);
   n->getLeft()->setRight(n);
   n->setParent(n->getLeft());
   n->setLeft(temp);
@@ -531,6 +532,7 @@ void AVLTree<Key, Value>::rotateLeft( AVLNode<Key, Value>* n)
       parent->setRight(n->getRight());
     }
   }
+  n->getRight()->setParent(parent);
   n->getRight()->setLeft(n);
   n->setParent(n->getRight());
   n->setRight(temp);
