@@ -250,7 +250,7 @@ protected:
 
     // Add helper functions here
     bool areSubsBalanced(Node<Key, Value>* head) const;
-    int subTreeHeight(Node<Key, Value>* current, int depth);
+    int subTreeHeight(const Node<Key, Value>* current, int depth) const;
     void clearHelper(Node<Key, Value>* passing);
 
 
@@ -783,7 +783,7 @@ bool BinarySearchTree<Key, Value>::areSubsBalanced(Node<Key, Value>* head) const
 
 
 template<typename Key, typename Value>
-int BinarySearchTree<Key, Value>::subTreeHeight(Node<Key, Value> * current, int depth)
+int BinarySearchTree<Key, Value>::subTreeHeight(const Node<Key, Value> * current, int depth) const
 {
     if(current == nullptr)
     {
