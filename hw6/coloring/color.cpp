@@ -3,6 +3,8 @@
 #include "avlbst.h"
 #include <map>
 #include <set>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -24,17 +26,17 @@ int main(int argc, char* argv[])
 
     std::cout << "files opened" << std::endl;
 
-    int numCountries;
-    int rows;
-    int cols;
+    int numCountries, rows, cols;
+    string holdVals;
     char holdNextLineChar;
     std::set<char> countryList;
     std::map<char, std::set<char>> connections; //used for tracking countries to which a contry is connected
 
-    std::cout << "variables created" << std::endl;
-
-    in_file >> numCountries >> rows >> cols;
+    std::getline(in_file, holdVals);
+    std::stringstream ss(holdVals);
+    ss >> numCountries >> rows >> cols;
     std::cout << "variables initialized" << std::endl;
+    std::cout << numCountries << rows << cols << std::endl;
 
     //this size will allow easy comparisons between upper/lower/left/right grids
     char** cMap = new char*[rows+2];
