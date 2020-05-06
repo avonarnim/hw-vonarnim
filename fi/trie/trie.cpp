@@ -30,8 +30,6 @@ void SparseTrie::insert(std::string key)
   bool stillInLine = false;
   while (key[index] != '\0' && current != NULL)
   {
-    prev = current;
-    current = current->children; //set current to appropriate child
     while (current != NULL && current->letter != key[index])
       { current = current->next; }
     if (current == NULL)
@@ -39,6 +37,8 @@ void SparseTrie::insert(std::string key)
       stillInLine = true;
       break;
     }
+    prev = current;
+    current = current->children; //set current to appropriate child
     index++;
   }
   if (current)
