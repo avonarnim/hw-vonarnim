@@ -24,35 +24,43 @@ SparseTrie::~SparseTrie()
 
 void SparseTrie::insert(std::string key)
 {
-  TNode* current = root->children, prev = root;
-  int index = 0;
+  TNode* current = getRoot()->children
+  TNode* prev = getRoot();
+  unsigned int index = 0;
+  bool stillInLine = false;
   while (key[index] != '\0' && current != NULL)
   {
     prev = current;
     current = current->children; //set current to appropriate child
     while (current != NULL && current->letter != key[index])
-      current = current->next;
+      { current = current->next; }
+    if (current == NULL)
+    {
+      stillInLine = true;
+      break;
+    }
     index++;
   }
   if (current)
   {
-    node->terminal = true;
+    current->terminal = true;
+    return;
   }
-  else
+  if (stillInLine)
   {
-    while (key[index] != '\0')
-    {
-      current = new TNode(key[index], false)
-      prev->children = current;
-      prev = current;
-      index++;
-    }
-    prev->terminal = true;
-    if (root == NULL)
-    {
-      root->children = current;
-    }
+    TNode* temp = prev->children;
+    prev->children = new TNode(key[index], false);
+    prev->next = temp;
+    index++;
   }
+  while (key[index] != '\0')
+  {
+    current = new TNode(key[index], false);
+    prev->children = current;
+    prev = current;
+    index++;
+  }
+  prev->terminal = true;
 }
 
 bool SparseTrie::contains(std::string key)
@@ -70,7 +78,7 @@ bool SparseTrie::containsHelper(std::string key, TNode* current, int index)
     bool result = false;
     while (current != NULL)
     {
-      if (current->letter == key[key.length()-1] && terminal)
+      if (current->letter == key[key.length()-1] && current->terminal)
         result = true;
     }
     return result;
