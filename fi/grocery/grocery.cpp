@@ -24,7 +24,7 @@ std::vector<GItem> constructBox(std::vector<GItem> inventory, std::vector<GItem>
   holdings.push_back(inventory[idx]);
   if (getWeight(holdings) > weight_limit)
   {
-    holdings.erase(holdings.size()-1);
+    holdings.pop_back();
   }
   std::vector<GItem> resultW = constructBox(inventory, holdings, weight_limit, idx + 1);
   if (getValue(resultWO) > getValue(resultW)) //return max of two options
