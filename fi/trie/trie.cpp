@@ -24,7 +24,7 @@ SparseTrie::~SparseTrie()
 
 void SparseTrie::insert(std::string key)
 {
-  TNode* current = getRoot()->children
+  TNode* current = getRoot()->children;
   TNode* prev = getRoot();
   unsigned int index = 0;
   bool stillInLine = false;
@@ -50,7 +50,8 @@ void SparseTrie::insert(std::string key)
   {
     TNode* temp = prev->children;
     prev->children = new TNode(key[index], false);
-    prev->next = temp;
+    prev->children->next = temp;
+    prev = prev->children;
     index++;
   }
   while (key[index] != '\0')
