@@ -49,7 +49,7 @@ inline std::ostream& operator<<(std::ostream& ostr, GItem const & gi) {
  *   total value.
  */
 std::vector<GItem> maxGroceryBox(const std::vector<GItem>& inventory, int weight_limit);
-std::vector<GItem> constructBox(std::vector<GItem> inventory, std::vector<GItem> holdings, int weight_limit, int idx);
+std::vector<GItem> constructBox(std::vector<GItem> inventory, std::vector<GItem> holdings, unsigned int weight_limit, int idx);
 int getWeight(const std::vector<GItem> box);
 int getValue(const std::vector<GItem> box);
 
