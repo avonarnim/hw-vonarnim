@@ -16,9 +16,9 @@ std::vector<GItem> maxGroceryBox(const std::vector<GItem>& inventory, int weight
 
 }
 
-std::vector<GItem> constructBox(std::vector<GItem> inventory, std::vector<GItem> holdings, int weight_limit, int idx)
+std::vector<GItem> constructBox(std::vector<GItem> inventory, std::vector<GItem> holdings, unsigned int weight_limit, int idx)
 {
-  if (getWeight(box) >= weight_limit && idx < inventory.size())
+  if (getWeight(holdings) >= weight_limit || idx == inventory.size())
     return holdings;
   std::vector<GItem> resultWO = constructBox(inventory, holdings, weight_limit, idx + 1);
   holdings.push_back(inventory[idx]);
